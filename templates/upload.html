@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Upload</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-[#FAFAF8] p-8 font-sans">
+
+<!-- SIDEBAR -->
+  <div class="w-64 h-screen bg-white border-r p-5 flex flex-col justify-between fixed left-0 top-0">
+
+    <!-- TOP -->
+    <div>
+      <h1 class="text-xl font-serif mb-6">Nudge</h1>
+
+      <nav class="space-y-2">
+        <a href="/dashboard" class="block px-3 py-2 rounded-lg bg-[#E8F0EC] text-[#2D6A4F] font-medium">Home</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">My Notes</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Flashcards</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Quizzes</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Progress</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">PYQ Analysis</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Bookmarks</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">History</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Export</a>
+      </nav>
+    </div>
+
+    <!-- BOTTOM -->
+    <div>
+      <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Settings</a>
+
+      <div class="mt-4 flex items-center gap-3">
+        <div class="w-8 h-8 bg-[#2D6A4F] text-white rounded-full flex items-center justify-center">
+          S
+        </div>
+        <div>
+          <p class="text-sm font-medium">Siddharth</p>
+          <a href="#" class="text-xs text-gray-500">Sign out</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+<div class="max-w-3xl mx-auto space-y-6">
+
+  <!-- HEADER -->
+  <div>
+    <h1 class="text-3xl font-serif text-[#1A1A1A]">
+      Add New Study Material
+    </h1>
+    <p class="text-[#6B6B6B] mt-1">
+      Upload a file, paste text, or record a voice note — we'll handle the rest.
+    </p>
+  </div>
+
+  <!-- TABS -->
+  <div class="flex gap-2 flex-wrap">
+    <button onclick="switchTab('text')" class="tab-btn active">Text</button>
+    <button onclick="switchTab('file')" class="tab-btn">PDF / Word</button>
+    <button onclick="switchTab('image')" class="tab-btn">Image</button>
+    <button onclick="switchTab('audio')" class="tab-btn">Audio</button>
+    <button onclick="switchTab('pyq')" class="tab-btn">PYQ</button>
+  </div>
+
+  <!-- INPUT CARD -->
+  <div class="bg-white p-6 rounded-xl border space-y-4">
+
+    <!-- TEXT MODE -->
+    <div id="textTab">
+
+      <div class="relative">
+        <textarea
+          id="text"
+          class="w-full min-h-[200px] p-4 border rounded-lg focus:outline-none focus:border-[#2D6A4F]"
+          placeholder="Paste your notes, textbook excerpt..."
+          oninput="updateCount()"
+        ></textarea>
+
+        <span id="charCount"
+          class="absolute bottom-2 right-3 text-xs text-gray-500">
+          0 chars
+        </span>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-4">
+        <input id="subject"
+          class="p-3 border rounded-lg"
+          placeholder="Subject / Topic">
+
+        <input id="tags"
+          class="p-3 border rounded-lg"
+          placeholder="Add Tags (comma separated)">
+      </div>
+
+    </div>
+
+    <!-- FILE MODE -->
+    <div id="fileTab" class="hidden">
+      <div class="border-2 border-dashed p-10 text-center rounded-lg cursor-pointer"
+        onclick="document.getElementById('fileInput').click()">
+
+        <p class="font-medium">Drag & drop file or click</p>
+        <p class="text-sm text-gray-500">PDF, DOCX, TXT</p>
+
+        <input type="file" id="fileInput" class="hidden" onchange="handleFile(event)">
+      </div>
+
+      <p id="fileName" class="mt-3 text-sm"></p>
+    </div>
+
+    <!-- IMAGE MODE -->
+    <div id="imageTab" class="hidden">
+      <p class="text-gray-500">Image upload coming soon</p>
+    </div>
+
+    <!-- AUDIO MODE -->
+    <div id="audioTab" class="hidden text-center">
+      <button onclick="toggleRecording()"
+        class="w-20 h-20 rounded-full bg-[#2D6A4F] text-white text-xl">
+        🎤
+      </button>
+      <p id="recordingStatus" class="mt-2 text-gray-500">Tap to Record</p>
+    </div>
+
+    <!-- PYQ MODE -->
+    <div id="pyqTab" class="hidden">
+      <p class="text-gray-500">Upload previous year papers</p>
+    </div>
+
+  </div>
+
+  <!-- OPTIONS -->
+  <div class="bg-white p-6 rounded-xl border">
+    <h3 class="font-medium mb-4">What do you want Nudge to do?</h3>
+
+    <div class="grid md:grid-cols-2 gap-3">
+      <label><input type="checkbox" checked id="summary"> Generate Summary</label>
+      <label><input type="checkbox" checked id="notes"> Create Structured Notes</label>
+      <label><input type="checkbox" checked id="flashcards"> Generate Flashcards</label>
+      <label><input type="checkbox" id="quiz"> Create Quiz</label>
+    </div>
+  </div>
+
+  <!-- BUTTON -->
+  <button onclick="processText()"
+    class="w-full bg-[#2D6A4F] text-white py-4 rounded-lg text-lg">
+    Process with AI →
+  </button>
+
+</div>
+
+<script>
+function processText() {
+  const text = document.getElementById("text").value;
+
+  if (!text.trim()) {
+    alert("Please enter some text");
+    return;
+  }
+
+  localStorage.setItem("text", text);
+
+  window.location.href = "/processing";
+}
+</script>
+
+<style>
+.tab-btn {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #E2E2E2;
+  font-size: 13px;
+}
+
+.tab-btn.active {
+  background: #2D6A4F;
+  color: white;
+  border-color: #2D6A4F;
+}
+</style>
+
+</body>
+</html>

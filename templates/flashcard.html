@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Flashcards</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-[#FAFAF8] font-sans flex items-center justify-center">
+
+<div class="max-w-xl w-full text-center space-y-6 mt-10">
+
+  <!-- HEADER -->
+  <h1 class="text-3xl font-serif">Flashcard Review</h1>
+
+  <!-- PROGRESS -->
+  <div>
+    <div class="w-full h-2 bg-gray-200 rounded">
+      <div id="progressBar" class="h-2 bg-[#2D6A4F] rounded"></div>
+    </div>
+    <p id="progressText" class="text-xs text-gray-500 mt-1"></p>
+  </div>
+
+  <!-- CARD -->
+  <div id="card"
+    class="bg-white p-10 rounded-xl shadow cursor-pointer min-h-[250px] flex flex-col justify-center items-center transition"
+    onclick="flipCard()">
+
+    <p id="cardLabel" class="text-xs uppercase text-gray-400 mb-2">Question</p>
+    <p id="cardText" class="text-lg font-serif text-center"></p>
+
+    <p id="hint" class="text-green-700 text-sm mt-4">Tap to reveal →</p>
+  </div>
+
+  <!-- RATE BUTTONS -->
+  <div id="ratingBtns" class="grid grid-cols-3 gap-2 hidden">
+    <button onclick="rate('still')" class="bg-gray-200 py-2 rounded">Still</button>
+    <button onclick="rate('almost')" class="bg-gray-100 py-2 rounded">Almost</button>
+    <button onclick="rate('got')" class="bg-green-200 py-2 rounded">Got ✓</button>
+  </div>
+
+  <!-- NAV -->
+  <div class="flex justify-between mt-4">
+    <button onclick="prevCard()" class="px-4 py-2 border rounded">←</button>
+
+    <div class="flex gap-4 text-sm">
+      <button onclick="shuffleCards()">Shuffle</button>
+      <button onclick="restart()">Restart</button>
+    </div>
+
+    <button onclick="nextCard()" class="px-4 py-2 border rounded">→</button>
+  </div>
+
+  <!-- STATS -->
+  <div class="text-xs text-gray-500 mt-4">
+    <span id="got"></span> ·
+    <span id="almost"></span> ·
+    <span id="still"></span>
+  </div>
+
+</div>
+
+<script>
+let cards = [];
+let index = 0;
+let flipped = false;
+let ratings = {};
+
+// LOAD FROM AI RESULT
+function loadCards() {
+  const raw = localStorage.getItem("result");
+  if (!raw) return;
+
+  const data = JSON.parse(raw);
+  cards = data.flashcards || [];
+
+  if (cards.length === 0) {
+    document.getElementById("cardText").innerText = "No flashcards available";
+    return;
+  }
+
+  render();
+}
+
+// RENDER CARD
+function render() {
+  const card = cards[index];
+
+  document.getElementById("cardText").innerText =
+    flipped ? card.answer : card.question;
+
+  document.getElementById("cardLabel").innerText =
+    flipped ? "Answer" : "Question";
+
+  document.getElementById("hint").style.display =
+    flipped ? "none" : "block";
+
+  document.getElementById("ratingBtns").style.display =
+    flipped ? "grid" : "none";
+
+  // progress
+  const progress = ((index + 1) / cards.length) * 100;
+  document.getElementById("progressBar").style.width = progress + "%";
+  document.getElementById("progressText").innerText =
+    `Card ${index + 1} of ${cards.length}`;
+
+  updateStats();
+}
+
+// FLIP
+function flipCard() {
+  if (!flipped) {
+    flipped = true;
+    render();
+  }
+}
+
+// NAVIGATION
+function nextCard() {
+  if (index < cards.length - 1) {
+    index++;
+    flipped = false;
+    render();
+  }
+}
+
+function prevCard() {
+  if (index > 0) {
+    index--;
+    flipped = false;
+    render();
+  }
+}
+
+// RATE
+function rate(type) {
+  ratings[index] = type;
+  setTimeout(nextCard, 200);
+}
+
+// SHUFFLE
+function shuffleCards() {
+  cards.sort(() => Math.random() - 0.5);
+  index = 0;
+  flipped = false;
+  ratings = {};
+  render();
+}
+
+// RESTART
+function restart() {
+  index = 0;
+  flipped = false;
+  ratings = {};
+  render();
+}
+
+// STATS
+function updateStats() {
+  const values = Object.values(ratings);
+
+  document.getElementById("got").innerText =
+    "Got: " + values.filter(v => v === "got").length;
+
+  document.getElementById("almost").innerText =
+    "Almost: " + values.filter(v => v === "almost").length;
+
+  document.getElementById("still").innerText =
+    "Still: " + values.filter(v => v === "still").length;
+}
+
+window.onload = loadCards;
+</script>
+
+</body>
+</html>

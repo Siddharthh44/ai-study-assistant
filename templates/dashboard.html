@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-[#FAFAF8] font-sans flex">
+
+  <!-- SIDEBAR -->
+  <div class="w-64 h-screen bg-white border-r p-5 flex flex-col justify-between fixed left-0 top-0">
+
+    <!-- TOP -->
+    <div>
+      <h1 class="text-xl font-serif mb-6">Nudge</h1>
+
+      <nav class="space-y-2">
+        <a href="/dashboard" class="block px-3 py-2 rounded-lg bg-[#E8F0EC] text-[#2D6A4F] font-medium">Home</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">My Notes</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Flashcards</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Quizzes</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Progress</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">PYQ Analysis</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Bookmarks</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">History</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Export</a>
+      </nav>
+    </div>
+
+    <!-- BOTTOM -->
+    <div>
+      <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Settings</a>
+
+      <div class="mt-4 flex items-center gap-3">
+        <div class="w-8 h-8 bg-[#2D6A4F] text-white rounded-full flex items-center justify-center">
+          S
+        </div>
+        <div>
+          <p class="text-sm font-medium">Siddharth</p>
+          <a href="#" class="text-xs text-gray-500">Sign out</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="ml-64 flex-1 p-8 space-y-8">
+
+    <!-- HEADER -->
+    <div class="flex justify-between items-center">
+      <div>
+        <h1 class="text-3xl font-serif text-[#1A1A1A]">
+          Good morning, Siddharth 👋
+        </h1>
+        <p class="text-gray-500">
+          You have tasks waiting today.
+        </p>
+      </div>
+
+      <a href="/upload">
+        <button class="bg-[#2D6A4F] text-white px-4 py-2 rounded-lg hover:bg-[#245C43]">
+          + Add Material
+        </button>
+      </a>
+    </div>
+
+    <!-- STATS -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-5">
+      <div class="bg-white p-5 rounded-lg shadow">
+        <p class="text-gray-500 text-sm">Notes Created</p>
+        <h2 class="text-2xl font-serif">14</h2>
+      </div>
+
+      <div class="bg-white p-5 rounded-lg shadow">
+        <p class="text-gray-500 text-sm">Flashcards Due</p>
+        <h2 class="text-2xl font-serif">7</h2>
+      </div>
+
+      <div class="bg-white p-5 rounded-lg shadow">
+        <p class="text-gray-500 text-sm">Quiz Average</p>
+        <h2 class="text-2xl font-serif">73%</h2>
+      </div>
+
+      <div class="bg-white p-5 rounded-lg shadow">
+        <p class="text-gray-500 text-sm">Study Streak</p>
+        <h2 class="text-2xl font-serif">6 days</h2>
+      </div>
+    </div>
+
+    <!-- RECENT NOTES -->
+    <div>
+      <h2 class="text-xl font-serif mb-3">Recent Notes</h2>
+
+      <div class="space-y-3">
+        <div class="bg-white p-4 rounded-lg shadow flex justify-between">
+          <div>
+            <h3 class="font-medium">Photosynthesis & Plant Biology</h3>
+            <p class="text-sm text-gray-500">Biology • 2h ago</p>
+          </div>
+          <a href="#" class="text-[#2D6A4F]">Open →</a>
+        </div>
+
+        <div class="bg-white p-4 rounded-lg shadow flex justify-between">
+          <div>
+            <h3 class="font-medium">Organic Chemistry: Alkanes</h3>
+            <p class="text-sm text-gray-500">Chemistry • Yesterday</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REVISION -->
+    <div>
+      <h2 class="text-xl font-serif mb-3">Due for Revision</h2>
+
+      <div class="bg-white rounded-lg shadow divide-y">
+        <div class="p-4 flex justify-between">
+          <div>
+            <p>Cellular Respiration</p>
+            <span class="text-sm text-gray-500">12 cards</span>
+          </div>
+          <button class="bg-[#2D6A4F] text-white px-3 py-1 rounded">
+            Start
+          </button>
+        </div>
+
+        <div class="p-4 flex justify-between">
+          <div>
+            <p>Periodic Table</p>
+            <span class="text-sm text-gray-500">24 cards</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</body>
+</html>

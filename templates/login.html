@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login</title>
+
+  <!-- Tailwind -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="font-sans">
+
+<div class="flex h-screen w-full overflow-hidden">
+
+  <!-- LEFT PANEL -->
+  <div class="w-[45%] bg-[#2D6A4F] hidden md:flex flex-col justify-between p-16 relative">
+
+    <div></div>
+
+    <div class="max-w-[420px]">
+      <h1 class="text-[48px] text-white leading-tight mb-10 font-serif">
+        Your notes.<br>Your pace.<br>Your way.
+      </h1>
+
+      <ul class="space-y-5">
+        <li class="text-white/80">✔ AI-generated notes from any content</li>
+        <li class="text-white/80">✔ Flashcards and quizzes in seconds</li>
+        <li class="text-white/80">✔ Tracks what you need to review</li>
+      </ul>
+    </div>
+
+    <div class="text-white font-serif text-xl">
+      Nudge ●
+    </div>
+  </div>
+
+  <!-- RIGHT PANEL -->
+  <div class="flex-1 bg-white flex flex-col items-center justify-center p-8 md:p-16">
+
+    <div class="w-full max-w-[400px]">
+
+      <!-- Heading -->
+      <div class="mb-8 text-center">
+        <h2 class="text-[32px] text-[#1A1A1A] mb-2 font-serif">
+          Welcome back
+        </h2>
+        <p class="text-[#6B6B6B] text-[15px]">
+          Let's pick up where you left off.
+        </p>
+      </div>
+
+      <!-- FORM -->
+      <form method="POST" action="/login" class="space-y-4">
+
+        <input
+          type="email"
+          name="email"
+          placeholder="Email address"
+          required
+          class="w-full h-11 px-4 border rounded-lg focus:outline-none focus:border-[#2D6A4F]"
+        >
+
+        <div class="relative">
+          <input
+            type="password"
+            name="password"
+            id="password"
+            placeholder="Password"
+            required
+            class="w-full h-11 px-4 pr-10 border rounded-lg focus:outline-none focus:border-[#2D6A4F]"
+          >
+
+          <button type="button"
+            onclick="togglePassword()"
+            class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500">
+            👁
+          </button>
+        </div>
+
+        <div class="flex justify-end">
+          <a href="#" class="text-sm text-[#2D6A4F]">Forgot password?</a>
+        </div>
+
+        <button
+          type="submit"
+          class="w-full h-12 bg-[#2D6A4F] text-white rounded-lg font-semibold hover:bg-[#245C43]"
+        >
+          Sign in →
+        </button>
+
+      </form>
+
+      <!-- Divider -->
+      <div class="my-6 flex items-center gap-4">
+        <div class="h-[1px] flex-1 bg-gray-300"></div>
+        <span class="text-xs text-gray-500 uppercase">or</span>
+        <div class="h-[1px] flex-1 bg-gray-300"></div>
+      </div>
+
+      <!-- Google Button -->
+      <button
+        class="w-full h-12 border rounded-lg hover:bg-gray-100"
+      >
+        Continue with Google
+      </button>
+
+      <!-- Toggle -->
+      <div class="mt-8 text-center">
+        <span class="text-gray-500">New here?</span>
+        <a href="#" class="text-[#2D6A4F] font-semibold">Create account →</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+function togglePassword() {
+  const input = document.getElementById("password");
+  input.type = input.type === "password" ? "text" : "password";
+}
+</script>
+
+</body>
+</html>

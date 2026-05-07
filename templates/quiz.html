@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-[#FAFAF8] font-sans flex justify-center">
+
+<!-- SIDEBAR -->
+  <div class="w-64 h-screen bg-white border-r p-5 flex flex-col justify-between fixed left-0 top-0">
+
+    <!-- TOP -->
+    <div>
+      <h1 class="text-xl font-serif mb-6">Nudge</h1>
+
+      <nav class="space-y-2">
+        <a href="/dashboard" class="block px-3 py-2 rounded-lg bg-[#E8F0EC] text-[#2D6A4F] font-medium">Home</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">My Notes</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Flashcards</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Quizzes</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Progress</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">PYQ Analysis</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Bookmarks</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">History</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Export</a>
+      </nav>
+    </div>
+
+    <!-- BOTTOM -->
+    <div>
+      <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Settings</a>
+
+      <div class="mt-4 flex items-center gap-3">
+        <div class="w-8 h-8 bg-[#2D6A4F] text-white rounded-full flex items-center justify-center">
+          S
+        </div>
+        <div>
+          <p class="text-sm font-medium">Siddharth</p>
+          <a href="#" class="text-xs text-gray-500">Sign out</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+<div class="max-w-2xl w-full mt-10 space-y-6">
+
+  <!-- HEADER -->
+  <div class="flex justify-between items-center">
+    <h1 class="text-xl font-serif">Quiz</h1>
+    <span id="progress" class="text-sm text-gray-500"></span>
+  </div>
+
+  <div class="w-full h-2 bg-gray-200 rounded">
+  <div id="progressBar" class="h-2 bg-[#2D6A4F] rounded"></div>
+  </div>
+
+  <!-- TIMER -->
+  <div class="text-right text-sm text-gray-500">
+    Time: <span id="timer"></span>
+  </div>
+
+  <!-- QUESTION -->
+  <h2 id="question" class="text-xl font-serif"></h2>
+
+  <!-- OPTIONS -->
+  <div id="options" class="space-y-3"></div>
+
+  <!-- EXPLANATION -->
+  <div id="explanation" class="hidden p-4 bg-[#F4F4F2] rounded-lg border text-sm text-gray-700"></div>
+
+  <!-- BUTTONS -->
+  <div class="flex justify-between pt-4">
+    <button onclick="prev()" class="border px-4 py-2 rounded">Prev</button>
+
+    <div class="flex gap-2">
+      <button id="submitBtn" onclick="submitAnswer()" class="bg-[#2D6A4F] text-white px-6 py-2 rounded">
+        Submit
+      </button>
+
+      <button id="nextBtn" onclick="next()" class="hidden bg-[#2D6A4F] text-white px-6 py-2 rounded">
+        Next →
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let questions = [];
+let current = 0;
+let selected = null;
+let answers = {};
+let answered = false;
+let timeLeft = 600;
+
+function loadQuiz() {
+  const data = JSON.parse(localStorage.getItem("result"));
+  questions = data.quiz || [];
+
+  if (!questions.length) {
+    document.body.innerHTML = "<h1>No quiz available</h1>";
+    return;
+  }
+
+  setInterval(updateTimer, 1000);
+  render();
+}
+
+function updateTimer() {
+  if (timeLeft > 0) timeLeft--;
+  document.getElementById("timer").innerText =
+    Math.floor(timeLeft / 60) + ":" + (timeLeft % 60).toString().padStart(2, "0");
+}
+
+function getCorrectIndex(q) {
+  return typeof q.answer === "number"
+    ? q.answer
+    : q.options.findIndex(opt => opt.startsWith(q.answer));
+}
+
+function render() {
+  const q = questions[current];
+
+  document.getElementById("question").innerText = q.question;
+  document.getElementById("progress").innerText =
+    `Q ${current + 1} / ${questions.length}`;
+
+  // ✅ Progress bar
+  const progressPercent = ((current + 1) / questions.length) * 100;
+  if (document.getElementById("progressBar")) {
+    document.getElementById("progressBar").style.width = progressPercent + "%";
+  }
+
+  const optionsDiv = document.getElementById("options");
+  optionsDiv.innerHTML = "";
+
+  const correctIndex = getCorrectIndex(q);
+
+  q.options.forEach((opt, i) => {
+    const div = document.createElement("div");
+
+    let classes = `
+      p-4 rounded-xl border cursor-pointer transition-all
+      hover:shadow-sm
+    `;
+
+    // BEFORE SUBMIT
+    if (!answered) {
+      if (selected === i) {
+        classes += " border-[#2D6A4F]";
+      } else {
+        classes += " border-gray-200 hover:border-[#2D6A4F]";
+      }
+
+      div.innerText = opt; // normal text before submit
+    }
+
+    // AFTER SUBMIT
+    if (answered) {
+      classes = "p-4 rounded-xl border transition-all";
+
+      // disable clicks
+      div.style.pointerEvents = "none";
+
+      if (i === correctIndex) {
+        classes += " border-green-600 bg-green-50";
+        div.innerHTML = `✔ ${opt}`;
+      } else if (i === selected) {
+        classes += " border-red-500 bg-red-50";
+        div.innerHTML = `✗ ${opt}`;
+      } else {
+        classes += " border-gray-200 opacity-60";
+        div.innerText = opt;
+      }
+    }
+
+    div.className = classes;
+
+    // ✅ CLICK HANDLER
+    if (!answered) {
+      div.onclick = () => {
+        selected = i;
+        render();
+      };
+    }
+
+    optionsDiv.appendChild(div);
+  });
+
+  // ✅ Explanation (Figma style)
+  const exp = document.getElementById("explanation");
+
+  if (answered) {
+    exp.innerHTML = `
+      <div class="flex gap-2 items-start">
+        <span class="text-[#2D6A4F] font-bold">✓</span>
+        <div>
+          <p class="font-semibold text-[#1A1A1A]">Explanation</p>
+          <p class="text-sm text-gray-600 mt-1">
+            ${q.explanation || "No explanation available"}
+          </p>
+        </div>
+      </div>
+    `;
+    exp.classList.remove("hidden");
+  } else {
+    exp.classList.add("hidden");
+  }
+
+  // ✅ Buttons
+  document.getElementById("submitBtn").style.display = answered ? "none" : "block";
+  document.getElementById("nextBtn").style.display = answered ? "block" : "none";
+}
+
+function submitAnswer() {
+  if (selected === null) {
+    alert("Please select an option");
+    return;
+  }
+
+  answers[current] = selected;
+  answered = true;
+  render();
+}
+
+function next() {
+  if (!answered) return;
+
+  if (current < questions.length - 1) {
+    current++;
+    selected = answers[current] ?? null;
+    answered = answers[current] !== undefined;
+    render();
+  } else {
+    finish();
+  }
+}
+
+function prev() {
+  if (current > 0) {
+    current--;
+    selected = answers[current] ?? null;
+    answered = answers[current] !== undefined;
+    render();
+  }
+}
+
+function finish() {
+  localStorage.setItem("quizAnswers", JSON.stringify(answers));
+  window.location.href = "/quiz-result";
+}
+
+window.onload = loadQuiz;
+</script>
+
+</body>
+</html>

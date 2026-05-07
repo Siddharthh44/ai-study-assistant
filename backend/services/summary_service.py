@@ -12,6 +12,10 @@ from typing import Any
 from .llm_service import generate_content
 from .parser import parse_summary
 from .prompt_builder import build_summary_prompt
+from .prompt_builder import build_process_prompt
+
+import json
+import re
 
 
 logger = logging.getLogger(__name__)
@@ -73,7 +77,7 @@ def _is_cacheable_response(result: Any) -> bool:
         return False
 
     if result.get("error"):
-        return False
+        return result
 
     summary = result.get("summary")
     key_points = result.get("key_points")
@@ -195,3 +199,26 @@ def generate_summary(text: str, mode: str = "short") -> dict[str, Any]:
         raise
     finally:
         _release_request_future(cache_key)
+
+from .prompt_builder import build_process_prompt
+
+def generate_full_content(text: str) -> dict:
+    try:
+        prompt = build_process_prompt(text)
+        llm_response = generate_content(prompt, request_size=len(text))
+
+        cleaned = re.sub(r"```json|```", "", llm_response).strip()
+        return json.loads(cleaned)
+
+    except Exception as e:
+        print("API FAILED:", str(e))
+
+        # ✅ FALLBACK RESPONSE
+        return {
+            "title": "AI Notes (Fallback)",
+            "summary": "AI service is currently busy. Please try again in a few seconds.",
+            "notes": "We couldn’t generate full notes due to high server load.",
+            "key_concepts": [],
+            "flashcards": [],
+            "quiz": []
+        }

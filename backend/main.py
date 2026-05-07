@@ -1,71 +1,62 @@
-from inspect import signature
-from typing import Literal
+import os
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request, Form
+from fastapi.responses import HTMLResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+
 from pydantic import BaseModel, ConfigDict, Field
 
-from .services.summary_service import generate_summary
+# OLD (kept for fallback)
+from backend.services.summary_service import generate_summary
 
+# NEW
+from backend.services.summary_service import generate_full_content
 
 app = FastAPI()
 
+# -----------------------------
+# PATH SETUP
+# -----------------------------
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
+
+templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "templates"))
+
+# -----------------------------
+# MODELS
+# -----------------------------
+
+# OLD MODEL (kept)
 class SummaryRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     text: str = Field(..., min_length=1)
-    mode: Literal["short", "detailed", "exam"]
+    mode: str
 
 
 class SummaryResponse(BaseModel):
     summary: str
     key_points: list[str]
-    #difficulty: str
 
 
-def _generate_summary(text: str, mode: str):
-    service_signature = signature(generate_summary)
-
-    if "mode" in service_signature.parameters:
-        return generate_summary(text, mode)
-
-    return generate_summary(text)
+# NEW MODEL
+class ProcessRequest(BaseModel):
+    text: str
 
 
-def _build_summary_response(result: dict, requested_mode: str) -> SummaryResponse:
-    if not isinstance(result, dict):
-        raise HTTPException(status_code=502, detail="Summary service returned an invalid response.")
-
-    if result.get("error"):
-        raise HTTPException(status_code=502, detail=result["error"])
-
-    summary = result.get("summary")
-    key_points = result.get("key_points")
-    #difficulty = result.get("difficulty") or requested_mode
-
-    if not isinstance(summary, str) or not summary.strip():
-        raise HTTPException(status_code=502, detail="Summary service returned an invalid summary.")
-
-    if not isinstance(key_points, list) or not all(isinstance(point, str) for point in key_points):
-        raise HTTPException(status_code=502, detail="Summary service returned invalid key points.")
-
-    return SummaryResponse(
-        summary=summary.strip(),
-        key_points=key_points,
-        #difficulty=difficulty,
-    )
-
-
-@app.get("/")
-def read_root():
-    return {"message": "AI Study Assistant Backend Running"}
-
-
+# -----------------------------
+# HEALTH CHECK
+# -----------------------------
 @app.get("/health")
 def health_check():
     return {"status": "ok"}
 
 
+# -----------------------------
+# OLD ROUTE (optional fallback)
+# -----------------------------
 @app.post("/summarize", response_model=SummaryResponse)
 def summarize(request: SummaryRequest):
     try:
@@ -74,8 +65,68 @@ def summarize(request: SummaryRequest):
         return SummaryResponse(
             summary=result["summary"],
             key_points=result["key_points"],
-            #difficulty=result["difficulty"]
         )
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# -----------------------------
+# NEW MAIN ROUTE (IMPORTANT)
+# -----------------------------
+@app.post("/process")
+def process(request: ProcessRequest):
+    try:
+        result = generate_full_content(request.text)
+
+        if not isinstance(result, dict):
+            raise HTTPException(status_code=500, detail="Invalid response from AI")
+
+        if result.get("error"):
+            raise HTTPException(status_code=500, detail=result["error"])
+
+        return result
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# -----------------------------
+# PAGES
+# -----------------------------
+@app.get("/", response_class=HTMLResponse)
+def login_page(request: Request):
+    return templates.TemplateResponse("login.html", {"request": request})
+
+@app.post("/login")
+def login(email: str = Form(...), password: str = Form(...)):
+    # TEMP: skip auth
+    return RedirectResponse(url="/dashboard", status_code=303)
+
+@app.get("/dashboard", response_class=HTMLResponse)
+def dashboard_page(request: Request):
+    return templates.TemplateResponse("dashboard.html", {"request": request})
+
+@app.get("/upload", response_class=HTMLResponse)
+def upload_page(request: Request):
+    return templates.TemplateResponse("upload.html", {"request": request})
+
+@app.get("/processing", response_class=HTMLResponse)
+def processing_page(request: Request):
+    return templates.TemplateResponse("processing.html", {"request": request})
+
+@app.get("/result", response_class=HTMLResponse)
+def result_page(request: Request):
+    return templates.TemplateResponse("result.html", {"request": request})
+
+@app.get("/flashcards", response_class=HTMLResponse)
+def flashcards_page(request: Request):
+    return templates.TemplateResponse("flashcards.html", {"request": request})
+
+@app.get("/quiz", response_class=HTMLResponse)
+def quiz_page(request: Request):
+    return templates.TemplateResponse("quiz.html", {"request": request})
+
+@app.get("/quiz-result", response_class=HTMLResponse)
+def quiz_result_page(request: Request):
+    return templates.TemplateResponse("quiz-result.html", {"request": request})

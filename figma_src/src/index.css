@@ -1,0 +1,81 @@
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Fraunces", serif;
+  --font-sans: "Plus Jakarta Sans", sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  --color-nudge-bg: #F4F4F2;
+  --color-nudge-surface: #FFFFFF;
+  --color-nudge-primary: #2D6A4F;
+  --color-nudge-primary-hover: #245C43;
+  --color-nudge-secondary: #52796F;
+  --color-nudge-soft: #D8E8E0;
+  --color-nudge-hover: #F0F0EE;
+  --color-nudge-text: #1A1A1A;
+  --color-nudge-muted: #6B6B6B;
+  --color-nudge-border: #E2E2E2;
+  --color-nudge-error: #C0392B;
+}
+
+:root {
+  --color-nudge-bg: #F4F4F2;
+  --color-nudge-surface: #FFFFFF;
+  --color-nudge-primary: #2D6A4F;
+  --color-nudge-primary-hover: #245C43;
+  --color-nudge-secondary: #52796F;
+  --color-nudge-soft: #D8E8E0;
+  --color-nudge-hover: #F0F0EE;
+  --color-nudge-text: #1A1A1A;
+  --color-nudge-muted: #6B6B6B;
+  --color-nudge-border: #E2E2E2;
+  --color-nudge-error: #C0392B;
+}
+
+body {
+  background-color: var(--color-nudge-bg);
+  color: var(--color-nudge-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #E2E2E2; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #D1D1D1; }
+
+/* Range input thumb */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #2D6A4F;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #2D6A4F;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.15);
+}

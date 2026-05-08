@@ -28,60 +28,57 @@
     <p id="cardLabel" class="text-xs uppercase text-gray-400 mb-2">Question</p>
     <p id="cardText" class="text-lg font-serif text-center"></p>
 
-    <p id="hint" class="text-green-700 text-sm mt-4">Tap to reveal →</p>
+    <p id="hint" class="text-green-700 text-sm mt-4">Tap to reveal &rarr;</p>
   </div>
 
   <!-- RATE BUTTONS -->
   <div id="ratingBtns" class="grid grid-cols-3 gap-2 hidden">
     <button onclick="rate('still')" class="bg-gray-200 py-2 rounded">Still</button>
     <button onclick="rate('almost')" class="bg-gray-100 py-2 rounded">Almost</button>
-    <button onclick="rate('got')" class="bg-green-200 py-2 rounded">Got ✓</button>
+    <button onclick="rate('got')" class="bg-green-200 py-2 rounded">Got &#10003;</button>
   </div>
 
   <!-- NAV -->
   <div class="flex justify-between mt-4">
-    <button onclick="prevCard()" class="px-4 py-2 border rounded">←</button>
+    <button onclick="prevCard()" class="px-4 py-2 border rounded">&larr;</button>
 
     <div class="flex gap-4 text-sm">
       <button onclick="shuffleCards()">Shuffle</button>
       <button onclick="restart()">Restart</button>
     </div>
 
-    <button onclick="nextCard()" class="px-4 py-2 border rounded">→</button>
+    <button onclick="nextCard()" class="px-4 py-2 border rounded">&rarr;</button>
   </div>
 
   <!-- STATS -->
   <div class="text-xs text-gray-500 mt-4">
-    <span id="got"></span> ·
-    <span id="almost"></span> ·
+    <span id="got"></span> &middot;
+    <span id="almost"></span> &middot;
     <span id="still"></span>
   </div>
 
 </div>
 
+<script id="flashcards-data" type="application/json">{{ flashcards | tojson }}</script>
 <script>
-let cards = [];
+const cards = JSON.parse(document.getElementById("flashcards-data").textContent);
 let index = 0;
 let flipped = false;
 let ratings = {};
 
-// LOAD FROM AI RESULT
 function loadCards() {
-  const raw = localStorage.getItem("result");
-  if (!raw) return;
-
-  const data = JSON.parse(raw);
-  cards = data.flashcards || [];
-
   if (cards.length === 0) {
     document.getElementById("cardText").innerText = "No flashcards available";
+    document.getElementById("cardLabel").innerText = "Flashcards";
+    document.getElementById("hint").style.display = "none";
+    document.getElementById("progressText").innerText = "0 cards";
+    document.getElementById("ratingBtns").style.display = "none";
     return;
   }
 
   render();
 }
 
-// RENDER CARD
 function render() {
   const card = cards[index];
 
@@ -97,7 +94,6 @@ function render() {
   document.getElementById("ratingBtns").style.display =
     flipped ? "grid" : "none";
 
-  // progress
   const progress = ((index + 1) / cards.length) * 100;
   document.getElementById("progressBar").style.width = progress + "%";
   document.getElementById("progressText").innerText =
@@ -106,16 +102,20 @@ function render() {
   updateStats();
 }
 
-// FLIP
 function flipCard() {
-  if (!flipped) {
-    flipped = true;
-    render();
+  if (!cards.length) {
+    return;
   }
+
+  flipped = !flipped;
+  render();
 }
 
-// NAVIGATION
 function nextCard() {
+  if (!cards.length) {
+    return;
+  }
+
   if (index < cards.length - 1) {
     index++;
     flipped = false;
@@ -124,6 +124,10 @@ function nextCard() {
 }
 
 function prevCard() {
+  if (!cards.length) {
+    return;
+  }
+
   if (index > 0) {
     index--;
     flipped = false;
@@ -131,14 +135,16 @@ function prevCard() {
   }
 }
 
-// RATE
 function rate(type) {
   ratings[index] = type;
   setTimeout(nextCard, 200);
 }
 
-// SHUFFLE
 function shuffleCards() {
+  if (!cards.length) {
+    return;
+  }
+
   cards.sort(() => Math.random() - 0.5);
   index = 0;
   flipped = false;
@@ -146,15 +152,17 @@ function shuffleCards() {
   render();
 }
 
-// RESTART
 function restart() {
+  if (!cards.length) {
+    return;
+  }
+
   index = 0;
   flipped = false;
   ratings = {};
   render();
 }
 
-// STATS
 function updateStats() {
   const values = Object.values(ratings);
 

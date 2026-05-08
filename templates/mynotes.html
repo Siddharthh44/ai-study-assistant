@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Notes</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-[#FAFAF8] font-sans flex">
+
+<!-- SIDEBAR -->
+  <div class="w-64 min-h-screen bg-white border-r p-5 flex flex-col justify-between">
+
+    <!-- TOP -->
+    <div>
+      <h1 class="text-xl font-serif mb-6">Nudge</h1>
+
+      <nav class="space-y-2">
+        <a href="/dashboard" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Home</a>
+        <a href="/mynotes" class="block px-3 py-2 rounded-lg bg-[#E8F0EC] text-[#2D6A4F] font-medium">My Notes</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Flashcards</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Quizzes</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Progress</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">PYQ Analysis</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Bookmarks</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">History</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Export</a>
+      </nav>
+    </div>
+
+    <!-- BOTTOM -->
+    <div>
+      <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Settings</a>
+
+      <div class="mt-4 flex items-center gap-3">
+        <div class="w-8 h-8 bg-[#2D6A4F] text-white rounded-full flex items-center justify-center">
+          S
+        </div>
+        <div>
+          <p class="text-sm font-medium">Siddharth</p>
+          <a href="#" class="text-xs text-gray-500">Sign out</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+<div class="flex-1 p-8">
+
+  <!-- HEADER -->
+  <div class="flex items-start justify-between mb-6">
+    <div>
+      <h1 class="font-serif text-[32px] font-medium text-[#1A1A1A]">
+        My Notes
+      </h1>
+      <p class="text-[15px] text-[#6B6B6B] mt-1">
+        {{ notes|length }} notes generated from your content.
+      </p>
+    </div>
+
+    <a href="/upload"
+      class="flex items-center gap-2 bg-[#2D6A4F] text-white text-[14px] font-semibold px-5 py-2.5 rounded-lg hover:bg-[#245C43] transition">
+      + New Note
+    </a>
+  </div>
+
+  <!-- FILTER + SEARCH -->
+  <div class="flex flex-col md:flex-row gap-3 items-start md:items-center justify-between mb-6">
+
+    <!-- SUBJECT FILTER -->
+    <div class="flex gap-2 flex-wrap">
+      {% set subjects = ['All'] %}
+      {% for n in notes %}
+        {% if n.subject not in subjects %}
+          {% set _ = subjects.append(n.subject) %}
+        {% endif %}
+      {% endfor %}
+
+      {% for s in subjects %}
+      <button class="px-4 py-1.5 rounded-full text-[13px] font-medium border bg-white text-[#6B6B6B] border-[#E2E2E2] hover:border-[#2D6A4F] hover:text-[#2D6A4F]">
+        {{ s }}
+      </button>
+      {% endfor %}
+    </div>
+
+    <!-- SEARCH -->
+    <input
+      type="text"
+      placeholder="Search notes..."
+      class="pl-3 pr-4 h-9 bg-white border border-[#E2E2E2] rounded-lg text-[13px] focus:outline-none focus:border-[#2D6A4F] w-48"
+    />
+  </div>
+
+  <!-- EMPTY STATE -->
+  {% if notes|length == 0 %}
+  <div class="flex flex-col items-center justify-center py-24 text-center">
+    <h3 class="font-serif text-[20px] text-[#1A1A1A] mb-3">
+      Your first note is waiting to be made.
+    </h3>
+    <p class="text-[14px] text-[#6B6B6B] mb-6">
+      Upload any study material and generate notes instantly.
+    </p>
+    <a href="/upload"
+      class="bg-[#2D6A4F] text-white px-5 py-2.5 rounded-lg">
+      Add Study Material
+    </a>
+  </div>
+
+  {% else %}
+
+  <!-- NOTES GRID -->
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+
+    {% for note in notes %}
+    <a href="/notes/{{ note.id }}">
+      <div class="p-5 bg-white rounded-xl border hover:border-[#2D6A4F]/30 transition flex flex-col gap-3 h-full">
+
+        <!-- TOP -->
+        <div class="flex justify-between items-start">
+          <div class="w-9 h-9 rounded-lg bg-[#F4F4F2] flex items-center justify-center">
+            📄
+          </div>
+          <span class="text-[11px] text-[#6B6B6B]">
+            {{ note.date }}
+          </span>
+        </div>
+
+        <!-- TITLE -->
+        <div>
+          <h3 class="font-serif text-[17px] font-medium text-[#1A1A1A] hover:text-[#2D6A4F]">
+            {{ note.title }}
+          </h3>
+
+          <span class="bg-[#D8E8E0] text-[#2D6A4F] text-[11px] px-2.5 py-0.5 rounded-full">
+            {{ note.subject }}
+          </span>
+        </div>
+
+        <!-- PREVIEW -->
+        <p class="text-[13px] text-[#6B6B6B] line-clamp-2">
+          {{ note.preview }}
+        </p>
+
+        <!-- FOOTER -->
+        <div class="flex justify-between items-center pt-3 border-t">
+
+          <div class="flex gap-3 items-center">
+            <span class="text-[11px] text-[#6B6B6B]">
+              {{ note.flashcards }} cards
+            </span>
+
+            {% if note.hasQuiz %}
+            <span class="bg-[#F0F0EE] text-[#6B6B6B] text-[11px] px-2 py-0.5 rounded-full">
+              Quiz ready
+            </span>
+            {% endif %}
+          </div>
+
+          <span class="text-[#2D6A4F] text-[13px] font-semibold">
+            Open →
+          </span>
+
+        </div>
+
+      </div>
+    </a>
+    {% endfor %}
+
+  </div>
+
+  {% endif %}
+
+</div>
+</body>
+</html>

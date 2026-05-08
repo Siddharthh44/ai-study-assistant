@@ -10,20 +10,38 @@
   <!-- SIDEBAR -->
   <div class="w-64 h-screen bg-white border-r p-5 flex flex-col justify-between fixed left-0 top-0">
 
+    <!-- TOP -->
     <div>
       <h1 class="text-xl font-serif mb-6">Nudge</h1>
 
       <nav class="space-y-2">
-        <a href="/dashboard" class="block px-3 py-2 rounded-lg bg-[#E8F0EC] text-[#2D6A4F] font-medium">Home</a>
-        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">My Notes</a>
+        <a href="/dashboard" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Home</a>
+        <a href="/mynotes" class="block px-3 py-2 rounded-lg hover:bg-gray-100">My Notes</a>
         <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Flashcards</a>
-        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Quizzes</a>
+        <a href="#" class="block px-3 py-2 rounded-lg bg-[#E8F0EC] text-[#2D6A4F] font-medium">Quizzes</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Progress</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">PYQ Analysis</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Bookmarks</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">History</a>
+        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Export</a>
       </nav>
     </div>
 
+    <!-- BOTTOM -->
     <div>
-      <p class="text-sm font-medium">Siddharth</p>
+      <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Settings</a>
+
+      <div class="mt-4 flex items-center gap-3">
+        <div class="w-8 h-8 bg-[#2D6A4F] text-white rounded-full flex items-center justify-center">
+          S
+        </div>
+        <div>
+          <p class="text-sm font-medium">Siddharth</p>
+          <a href="#" class="text-xs text-gray-500">Sign out</a>
+        </div>
+      </div>
     </div>
+
   </div>
 
   <!-- MAIN CONTENT -->
@@ -33,152 +51,96 @@
 
       <!-- SCORE -->
       <div>
-        <h2 id="score" class="text-6xl font-serif"></h2>
-        <p id="percent" class="text-xl text-[#2D6A4F] mt-2"></p>
+        <h2 class="text-6xl font-serif">{{ correct }} / {{ total }}</h2>
+        <p class="text-xl text-[#2D6A4F] mt-2">{{ percent }}%</p>
 
         <!-- PROGRESS BAR -->
         <div class="w-full h-2 bg-gray-200 rounded mt-4">
-          <div id="bar" class="h-2 bg-[#2D6A4F] rounded"></div>
+          <div id="scoreBar" class="h-2 bg-[#2D6A4F] rounded" data-percent="{{ percent }}"></div>
         </div>
 
-        <p id="feedback" class="text-gray-600 mt-4 text-sm"></p>
+        <p class="text-gray-600 mt-4 text-sm">{{ feedback }}</p>
       </div>
 
       <!-- TOPICS -->
       <div>
         <p class="text-xs tracking-widest text-gray-500">TOPICS TO REVIEW</p>
-        <div id="topics" class="flex justify-center gap-3 mt-3 flex-wrap"></div>
+        <div class="flex justify-center gap-3 mt-3 flex-wrap">
+          {% if topics_to_review %}
+            {% for topic in topics_to_review %}
+              <div class="px-3 py-1 bg-gray-100 rounded-full text-sm">
+                {{ topic.name }} &middot; {{ topic.accuracy }}%
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="px-3 py-1 bg-gray-100 rounded-full text-sm">All topics mastered</div>
+          {% endif %}
+        </div>
       </div>
 
       <!-- WRONG ANSWERS -->
       <div class="text-left space-y-6">
         <h2 class="text-2xl font-serif">Review Incorrect Answers</h2>
-        <div id="wrong"></div>
+        <div class="space-y-6">
+          {% if wrong_answers %}
+            {% for item in wrong_answers %}
+              <div class="p-5 bg-white rounded-xl border border-red-200">
+                <p class="font-semibold mb-3">{{ item.question }}</p>
+
+                <div class="flex gap-3 mb-3">
+                  <div class="flex-1 bg-red-50 border border-red-200 rounded-lg p-3 text-sm">
+                    <p class="text-xs text-red-500 uppercase">Your Answer</p>
+                    <p>{{ item.user_answer }}</p>
+                  </div>
+
+                  <div class="flex-1 bg-green-50 border border-green-200 rounded-lg p-3 text-sm">
+                    <p class="text-xs text-green-600 uppercase">Correct Answer</p>
+                    <p>{{ item.correct_answer }}</p>
+                  </div>
+                </div>
+
+                <button onclick="toggleExp(this)" class="text-sm text-[#2D6A4F]">
+                  Show explanation &#9662;
+                </button>
+
+                <p class="hidden mt-2 text-sm text-gray-600">
+                  {{ item.explanation }}
+                </p>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="p-5 bg-white rounded-xl border border-green-200 text-sm text-gray-600">
+              No incorrect answers to review.
+            </div>
+          {% endif %}
+        </div>
       </div>
 
-      <button onclick="restart()"
-        class="bg-[#2D6A4F] text-white px-6 py-2 rounded">
-        Try Again
-      </button>
+      <a href="/quiz{% if result_id %}?result_id={{ result_id }}{% endif %}">
+        <button class="bg-[#2D6A4F] text-white px-6 py-2 rounded">
+          Try Again
+        </button>
+      </a>
 
     </div>
 
   </div>
 
 <script>
-function getCorrectIndex(q) {
-  return typeof q.answer === "number"
-    ? q.answer
-    : q.options.findIndex(opt => opt.startsWith(q.answer));
+const scoreBar = document.getElementById("scoreBar");
+
+if (scoreBar) {
+  scoreBar.style.width = `${scoreBar.dataset.percent || 0}%`;
 }
 
-function loadResult() {
-  const data = JSON.parse(localStorage.getItem("result"));
-  const answers = JSON.parse(localStorage.getItem("quizAnswers"));
+function toggleExp(button) {
+  const explanation = button.nextElementSibling;
+  explanation.classList.toggle("hidden");
 
-  const questions = data.quiz;
-
-  let correct = 0;
-  let topicStats = {};
-
-  const wrongDiv = document.getElementById("wrong");
-  wrongDiv.innerHTML = "";
-
-  questions.forEach((q, i) => {
-    const correctIndex = getCorrectIndex(q);
-    const topic = q.topic || "General";
-
-    if (!topicStats[topic]) {
-      topicStats[topic] = { total: 0, correct: 0 };
-    }
-
-    topicStats[topic].total++;
-
-    if (answers[i] == correctIndex) {
-      correct++;
-      topicStats[topic].correct++;
-    } else {
-      const div = document.createElement("div");
-
-      div.className = "p-5 bg-white rounded-xl border border-red-200";
-
-      div.innerHTML = `
-        <p class="font-semibold mb-3">${q.question}</p>
-
-        <div class="flex gap-3 mb-3">
-          <div class="flex-1 bg-red-50 border border-red-200 rounded-lg p-3 text-sm">
-            <p class="text-xs text-red-500 uppercase">Your Answer</p>
-            <p>${q.options[answers[i]] || "Not answered"}</p>
-          </div>
-
-          <div class="flex-1 bg-green-50 border border-green-200 rounded-lg p-3 text-sm">
-            <p class="text-xs text-green-600 uppercase">Correct Answer</p>
-            <p>${q.options[correctIndex]}</p>
-          </div>
-        </div>
-
-        <button onclick="toggleExp(this)" class="text-sm text-[#2D6A4F]">
-          Show explanation ▼
-        </button>
-
-        <p class="hidden mt-2 text-sm text-gray-600">
-          ${q.explanation || "No explanation available"}
-        </p>
-      `;
-
-      wrongDiv.appendChild(div);
-    }
-  });
-
-  // SCORE
-  const total = questions.length;
-  const percent = Math.round((correct / total) * 100);
-
-  document.getElementById("score").innerText = `${correct} / ${total}`;
-  document.getElementById("percent").innerText = `${percent}%`;
-
-  document.getElementById("bar").style.width = percent + "%";
-
-  // FEEDBACK
-  let msg = "Good effort!";
-  if (percent > 80) msg = "Great work! You're close to mastery.";
-  else if (percent > 60) msg = "Nice! A bit more revision and you'll ace it.";
-  else msg = "Keep practicing — you're improving.";
-
-  document.getElementById("feedback").innerText = msg;
-
-  // TOPICS
-  const topicsDiv = document.getElementById("topics");
-
-  Object.keys(topicStats).forEach(t => {
-    const stat = topicStats[t];
-    const acc = Math.round((stat.correct / stat.total) * 100);
-
-    if (acc < 100) {
-      const chip = document.createElement("div");
-
-      chip.className = "px-3 py-1 bg-gray-100 rounded-full text-sm";
-      chip.innerText = `${t} · ${acc}%`;
-
-      topicsDiv.appendChild(chip);
-    }
-  });
+  button.innerHTML = explanation.classList.contains("hidden")
+    ? "Show explanation &#9662;"
+    : "Hide explanation &#9652;";
 }
-
-function toggleExp(btn) {
-  const p = btn.nextElementSibling;
-  p.classList.toggle("hidden");
-
-  btn.innerText = p.classList.contains("hidden")
-    ? "Show explanation ▼"
-    : "Hide explanation ▲";
-}
-
-function restart() {
-  window.location.href = "/quiz";
-}
-
-window.onload = loadResult;
 </script>
 
 </body>

@@ -15,8 +15,8 @@
       <h1 class="text-xl font-serif mb-6">Nudge</h1>
 
       <nav class="space-y-2">
-        <a href="/dashboard" class="block px-3 py-2 rounded-lg bg-[#E8F0EC] text-[#2D6A4F] font-medium">Home</a>
-        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">My Notes</a>
+        <a href="/dashboard" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Home</a>
+        <a href="/mynotes" class="block px-3 py-2 rounded-lg hover:bg-gray-100">My Notes</a>
         <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Flashcards</a>
         <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Quizzes</a>
         <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Progress</a>
@@ -52,17 +52,17 @@
       Add New Study Material
     </h1>
     <p class="text-[#6B6B6B] mt-1">
-      Upload a file, paste text, or record a voice note — we'll handle the rest.
+      Upload a file, paste text, or record a voice note &mdash; we'll handle the rest.
     </p>
   </div>
 
   <!-- TABS -->
   <div class="flex gap-2 flex-wrap">
-    <button onclick="switchTab('text')" class="tab-btn active">Text</button>
-    <button onclick="switchTab('file')" class="tab-btn">PDF / Word</button>
-    <button onclick="switchTab('image')" class="tab-btn">Image</button>
-    <button onclick="switchTab('audio')" class="tab-btn">Audio</button>
-    <button onclick="switchTab('pyq')" class="tab-btn">PYQ</button>
+    <button data-tab="text" onclick="switchTab('text')" class="tab-btn active">Text</button>
+    <button data-tab="file" onclick="switchTab('file')" class="tab-btn">PDF / Word</button>
+    <button data-tab="image" onclick="switchTab('image')" class="tab-btn">Image</button>
+    <button data-tab="audio" onclick="switchTab('audio')" class="tab-btn">Audio</button>
+    <button data-tab="pyq" onclick="switchTab('pyq')" class="tab-btn">PYQ</button>
   </div>
 
   <!-- INPUT CARD -->
@@ -120,7 +120,7 @@
     <div id="audioTab" class="hidden text-center">
       <button onclick="toggleRecording()"
         class="w-20 h-20 rounded-full bg-[#2D6A4F] text-white text-xl">
-        🎤
+        &#127908;
       </button>
       <p id="recordingStatus" class="mt-2 text-gray-500">Tap to Record</p>
     </div>
@@ -147,12 +147,45 @@
   <!-- BUTTON -->
   <button onclick="processText()"
     class="w-full bg-[#2D6A4F] text-white py-4 rounded-lg text-lg">
-    Process with AI →
+    Process with AI &rarr;
   </button>
 
 </div>
 
 <script>
+const tabIds = ["text", "file", "image", "audio", "pyq"];
+let isRecording = false;
+
+function switchTab(tab) {
+  tabIds.forEach(id => {
+    const section = document.getElementById(id + "Tab");
+    if (section) {
+      section.classList.toggle("hidden", id !== tab);
+    }
+  });
+
+  document.querySelectorAll(".tab-btn").forEach(button => {
+    button.classList.toggle("active", button.dataset.tab === tab);
+  });
+}
+
+function updateCount() {
+  const text = document.getElementById("text").value;
+  document.getElementById("charCount").innerText = `${text.length} chars`;
+}
+
+function handleFile(event) {
+  const file = event.target.files[0];
+  document.getElementById("fileName").innerText = file ? file.name : "";
+}
+
+function toggleRecording() {
+  isRecording = !isRecording;
+  document.getElementById("recordingStatus").innerText = isRecording
+    ? "Recording..."
+    : "Tap to Record";
+}
+
 function processText() {
   const text = document.getElementById("text").value;
 
@@ -161,10 +194,11 @@ function processText() {
     return;
   }
 
-  localStorage.setItem("text", text);
-
+  sessionStorage.setItem("studyText", text);
   window.location.href = "/processing";
 }
+
+updateCount();
 </script>
 
 <style>

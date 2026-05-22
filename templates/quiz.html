@@ -1,266 +1,102 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Quiz</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
+{% extends "base_app.html" %}
+{% block title %}Nudge - Photosynthesis Quiz{% endblock %}
 
-<body class="bg-[#FAFAF8] font-sans flex justify-center">
-
-<!-- SIDEBAR -->
-  <div class="w-64 h-screen bg-white border-r p-5 flex flex-col justify-between fixed left-0 top-0">
-
-    <!-- TOP -->
-    <div>
-      <h1 class="text-xl font-serif mb-6">Nudge</h1>
-
-      <nav class="space-y-2">
-        <a href="/dashboard" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Home</a>
-        <a href="/mynotes" class="block px-3 py-2 rounded-lg hover:bg-gray-100">My Notes</a>
-        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Flashcards</a>
-        <a href="#" class="block px-3 py-2 rounded-lg bg-[#E8F0EC] text-[#2D6A4F] font-medium">Quizzes</a>
-        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Progress</a>
-        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">PYQ Analysis</a>
-        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Bookmarks</a>
-        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">History</a>
-        <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Export</a>
-      </nav>
-    </div>
-
-    <!-- BOTTOM -->
-    <div>
-      <a href="#" class="block px-3 py-2 rounded-lg hover:bg-gray-100">Settings</a>
-
-      <div class="mt-4 flex items-center gap-3">
-        <div class="w-8 h-8 bg-[#2D6A4F] text-white rounded-full flex items-center justify-center">
-          S
-        </div>
-        <div>
-          <p class="text-sm font-medium">Siddharth</p>
-          <a href="#" class="text-xs text-gray-500">Sign out</a>
-        </div>
-      </div>
-    </div>
-
-  </div>
-
-<div class="max-w-2xl w-full mt-10 space-y-6">
-
-  <!-- HEADER -->
-  <div class="flex justify-between items-center">
-    <h1 class="text-xl font-serif">Quiz</h1>
-    <span id="progress" class="text-sm text-gray-500"></span>
-  </div>
-
-  <div class="w-full h-2 bg-gray-200 rounded">
-    <div id="progressBar" class="h-2 bg-[#2D6A4F] rounded"></div>
-  </div>
-
-  <!-- TIMER -->
-  <div class="text-right text-sm text-gray-500">
-    Time: <span id="timer"></span>
-  </div>
-
-  <!-- QUESTION -->
-  <h2 id="question" class="text-xl font-serif"></h2>
-
-  <!-- OPTIONS -->
-  <div id="options" class="space-y-3"></div>
-
-  <!-- EXPLANATION -->
-  <div id="explanation" class="hidden p-4 bg-[#F4F4F2] rounded-lg border text-sm text-gray-700"></div>
-
-  <!-- BUTTONS -->
-  <div class="flex justify-between pt-4">
-    <button id="prevBtn" onclick="prev()" class="border px-4 py-2 rounded">Prev</button>
-
-    <div class="flex gap-2">
-      <button id="submitBtn" onclick="submitAnswer()" class="bg-[#2D6A4F] text-white px-6 py-2 rounded">
-        Submit
-      </button>
-
-      <button id="nextBtn" onclick="next()" class="hidden bg-[#2D6A4F] text-white px-6 py-2 rounded">
-        Next &rarr;
-      </button>
-    </div>
-  </div>
-
-</div>
-
-<script id="quiz-result-id" type="application/json">{{ result_id | tojson }}</script>
-<script id="quiz-questions-data" type="application/json">{{ quiz_questions | tojson }}</script>
-<script>
-const resultId = JSON.parse(document.getElementById("quiz-result-id").textContent);
-let questions = JSON.parse(document.getElementById("quiz-questions-data").textContent);
-let current = 0;
-let selected = null;
-let answers = {};
-let answered = false;
-let timeLeft = 600;
-let timerHandle = null;
-
-function getCorrectIndex(question) {
-  if (typeof question.answer === "number") {
-    return question.answer;
-  }
-
-  return question.options.findIndex(option =>
-    option === question.answer || option.startsWith(question.answer)
-  );
-}
-
-function updateTimer() {
-  if (timeLeft > 0) {
-    timeLeft--;
-  }
-
-  document.getElementById("timer").innerText =
-    Math.floor(timeLeft / 60) + ":" + (timeLeft % 60).toString().padStart(2, "0");
-}
-
-function showEmptyState() {
-  document.getElementById("question").innerText = "No quiz available";
-  document.getElementById("progress").innerText = "";
-  document.getElementById("timer").innerText = "0:00";
-  document.getElementById("options").innerHTML =
-    '<p class="text-sm text-gray-500">Generate study material with quiz questions to see them here.</p>';
-  document.getElementById("prevBtn").style.display = "none";
-  document.getElementById("submitBtn").style.display = "none";
-  document.getElementById("nextBtn").style.display = "none";
-}
-
-function loadQuiz() {
-  if (!questions.length) {
-    showEmptyState();
-    return;
-  }
-
-  updateTimer();
-  timerHandle = setInterval(updateTimer, 1000);
-  render();
-}
-
-function render() {
-  const question = questions[current];
-  const correctIndex = getCorrectIndex(question);
-  const optionsDiv = document.getElementById("options");
-  const explanation = document.getElementById("explanation");
-  const progressPercent = ((current + 1) / questions.length) * 100;
-
-  document.getElementById("question").innerText = question.question;
-  document.getElementById("progress").innerText = `Q ${current + 1} / ${questions.length}`;
-  document.getElementById("progressBar").style.width = progressPercent + "%";
-  document.getElementById("prevBtn").style.visibility = current === 0 ? "hidden" : "visible";
-
-  optionsDiv.innerHTML = "";
-
-  question.options.forEach((option, index) => {
-    const optionCard = document.createElement("div");
-    let classes = "p-4 rounded-xl border cursor-pointer transition-all hover:shadow-sm";
-
-    if (!answered) {
-      classes += selected === index
-        ? " border-[#2D6A4F]"
-        : " border-gray-200 hover:border-[#2D6A4F]";
-      optionCard.innerText = option;
-      optionCard.onclick = () => {
-        selected = index;
-        render();
-      };
-    } else {
-      classes = "p-4 rounded-xl border transition-all";
-      optionCard.style.pointerEvents = "none";
-
-      if (index === correctIndex) {
-        classes += " border-green-600 bg-green-50";
-        optionCard.innerHTML = `&#10003; ${option}`;
-      } else if (index === selected) {
-        classes += " border-red-500 bg-red-50";
-        optionCard.innerHTML = `&#10007; ${option}`;
-      } else {
-        classes += " border-gray-200 opacity-60";
-        optionCard.innerText = option;
-      }
+{% block page_styles %}
+  <style>
+body {
+      font-family: 'Josefin Sans', sans-serif;
     }
+    .font-serif {
+      font-family: 'Instrument Serif', serif;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    
+    /* Animation mappings mimicking the Framer Motion configuration[cite: 12] */
+    .fade-in-slide {
+      animation: fadeInSlide 0.25s ease-out forwards;
+    }
+    .fade-in-expand {
+      animation: fadeInExpand 0.3s ease-out forwards;
+    }
+    
+    @keyframes fadeInSlide {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInExpand {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+{% endblock %}
 
-    optionCard.className = classes;
-    optionsDiv.appendChild(optionCard);
-  });
-
-  if (answered) {
-    explanation.innerHTML = `
-      <div class="flex gap-2 items-start">
-        <span class="text-[#2D6A4F] font-bold">&#10003;</span>
+{% block content %}
+<!-- Core Content Frame Wrapper[cite: 12] -->
+  <div class="max-w-[720px] w-full mx-auto bg-white border border-[#E2E2E2] p-6 md:p-10 rounded-2xl shadow-sm">
+    
+    <!-- Top Progress Tracker & Timer Status Header[cite: 12] -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between mb-3">
         <div>
-          <p class="font-semibold text-[#1A1A1A]">Explanation</p>
-          <p class="text-sm text-gray-600 mt-1">
-            ${question.explanation || "No explanation available"}
-          </p>
+          <p id="quizSubject" class="font-mono text-[11px] text-[#6B6B6B] uppercase tracking-[0.03em]">Quiz</p>
+          <p id="quizTitle" class="text-[15px] font-medium text-[#1A1A1A]">Loading quiz...</p>
+        </div>
+
+        <span id="questionCounter" class="font-mono text-[14px] font-medium text-[#1A1A1A]">
+          <!-- Injected dynamically -->
+        </span>
+
+        <div id="timerBadge" class="flex items-center gap-2 px-3 py-1.5 rounded-full transition-colors duration-300">
+          <i data-lucide="clock" class="w-3.5 h-3.5"></i>
+          <span id="timerText" class="font-mono text-[13px] font-medium">10:00</span>
         </div>
       </div>
-    `;
-    explanation.classList.remove("hidden");
-  } else {
-    explanation.classList.add("hidden");
-  }
 
-  document.getElementById("submitBtn").style.display = answered ? "none" : "block";
-  document.getElementById("nextBtn").style.display = answered ? "block" : "none";
-}
+      <!-- Linear Tracker Timeline Track[cite: 12] -->
+      <div class="h-[6px] bg-[#E2E2E2] rounded-full overflow-hidden">
+        <div id="progressBarFill" class="h-full bg-[#2D6A4F] rounded-full transition-all duration-500 w-0"></div>
+      </div>
+    </div>
 
-function submitAnswer() {
-  if (selected === null) {
-    alert("Please select an option");
-    return;
-  }
+    <!-- Active Question Card Workspace View[cite: 12] -->
+    <div id="questionWorkspace" class="fade-in-slide">
+      <div class="mb-6">
+        <span id="questionNumberPrefix" class="font-mono text-[17px] font-medium text-[#2D6A4F] tracking-[0.03em]"></span>
+        <h2 id="questionTextDisplay" class="font-serif text-[22px] font-medium text-[#1A1A1A] leading-snug mt-1"></h2>
+      </div>
 
-  answers[current] = selected;
-  answered = true;
-  render();
-}
+      <!-- Option Cards Matrix List[cite: 12] -->
+      <div id="optionsContainer" class="space-y-3 mb-6">
+        <!-- Generated Dynamically -->
+      </div>
 
-function next() {
-  if (!answered) {
-    return;
-  }
+      <!-- Contextual Explanation Wrapper Panel[cite: 12] -->
+      <div id="explanationContainer" class="hidden">
+        <!-- Rendered dynamically upon response validation submission -->
+      </div>
+    </div>
 
-  if (current < questions.length - 1) {
-    current++;
-    selected = answers[current] ?? null;
-    answered = answers[current] !== undefined;
-    render();
-    return;
-  }
+    <!-- Workflow Progression Footer Controls[cite: 12] -->
+    <div class="flex items-center justify-between pt-6 border-t border-[#E2E2E2]">
+      <button
+        id="prevButton"
+        onclick="navigateToPreviousQuestion()"
+        class="flex items-center gap-2 text-[14px] text-[#6B6B6B] hover:text-[#2D6A4F] disabled:opacity-30 transition-colors font-medium focus:outline-none"
+      >
+        <i data-lucide="arrow-left" class="w-4 h-4"></i> Previous
+      </button>
 
-  finish();
-}
+      <div id="actionButtonWrapper">
+        <!-- Mutates contextually between Submit, Next Question, or Finish[cite: 12] -->
+      </div>
+    </div>
 
-function prev() {
-  if (current === 0) {
-    return;
-  }
+  </div>
+{% endblock %}
 
-  current--;
-  selected = answers[current] ?? null;
-  answered = answers[current] !== undefined;
-  render();
-}
+{% block page_scripts %}
+  <script src="/static/js/quiz.js"></script>
+{% endblock %}
 
-function finish() {
-  if (timerHandle) {
-    clearInterval(timerHandle);
-  }
-
-  const params = new URLSearchParams();
-  if (resultId) {
-    params.set("result_id", resultId);
-  }
-  params.set("answers", JSON.stringify(answers));
-  window.location.href = "/quiz-result?" + params.toString();
-}
-
-window.onload = loadQuiz;
-</script>
-
-</body>
-</html>

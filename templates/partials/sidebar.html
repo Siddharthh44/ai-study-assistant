@@ -1,0 +1,57 @@
+{% set current_path = request.url.path %}
+{% macro nav_link(href, icon, label, active) -%}
+  <li>
+    <a
+      href="{{ href }}"
+      class="flex items-center gap-3 h-10 px-4 mx-2 rounded-lg transition-all duration-150 group relative text-[14px] {{ 'bg-[#D8E8E0]/50 text-[#2D6A4F]' if active else 'text-[#6B6B6B] hover:bg-[#F0F0EE] hover:text-[#1A1A1A]' }}"
+      {% if active %}aria-current="page"{% endif %}
+    >
+      {% if active %}
+        <div class="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-6 bg-[#2D6A4F] rounded-r-full -ml-2"></div>
+      {% endif %}
+      <i data-lucide="{{ icon }}" class="w-5 h-5 flex-shrink-0 {{ 'text-[#2D6A4F]' if active else 'text-[#6B6B6B] group-hover:text-[#1A1A1A]' }}"></i>
+      <span class="font-sans font-medium">{{ label }}</span>
+    </a>
+  </li>
+{%- endmacro %}
+
+<aside id="appSidebar" class="w-[220px] flex-shrink-0 h-full border-r border-[#E2E2E2] bg-[#F4F4F2] flex-col justify-between hidden md:flex">
+  <div class="flex flex-col h-full">
+    <div class="h-14 flex items-center px-6 border-b border-[#E2E2E2]">
+      <span class="font-serif text-[20px] font-medium text-[#1A1A1A]">Nudge</span>
+      <span class="ml-[2px] w-[7px] h-[7px] rounded-full bg-[#2D6A4F] mb-[1px]"></span>
+    </div>
+
+    <nav class="flex-1 overflow-y-auto py-3">
+      <ul class="space-y-0.5">
+        {{ nav_link('/dashboard', 'house', 'Home', current_path == '/dashboard') }}
+        {{ nav_link('/upload', 'folder-plus', 'Upload', current_path == '/upload') }}
+        {{ nav_link('/notes', 'files', 'My Notes', current_path.startswith('/notes')) }}
+        {{ nav_link('/flashcards', 'layers-3', 'Flashcards', current_path.startswith('/flashcards')) }}
+        {{ nav_link('/quizzes', 'graduation-cap', 'Quizzes', current_path.startswith('/quizzes') or current_path.startswith('/quiz')) }}
+        {{ nav_link('/progress', 'chart-column-big', 'Progress', current_path.startswith('/progress')) }}
+        {{ nav_link('/bookmarks', 'bookmark', 'Bookmarks', current_path.startswith('/bookmarks')) }}
+        {{ nav_link('/history', 'history', 'History', current_path.startswith('/history')) }}
+        {{ nav_link('/export', 'square-arrow-out-up-right', 'Export', current_path.startswith('/export')) }}
+        {{ nav_link('/settings', 'settings-2', 'Settings', current_path.startswith('/settings')) }}
+      </ul>
+    </nav>
+
+    <div class="border-t border-[#E2E2E2] p-3">
+      <div class="mt-1 flex items-center gap-3 px-4 py-2">
+        <a href="/settings" class="w-8 h-8 rounded-full bg-[#2D6A4F] flex items-center justify-center flex-shrink-0">
+          <span class="font-mono text-[11px] text-white tracking-wider">{{ shell_data.user.initials }}</span>
+        </a>
+        <div class="flex flex-col min-w-0 flex-1">
+          <a href="/settings" class="text-[14px] font-medium text-[#1A1A1A] truncate">{{ shell_data.user.full_name }}</a>
+          <form action="/logout" method="post">
+            <button type="submit" class="text-left text-[11px] text-[#6B6B6B] hover:text-[#2D6A4F] transition-colors">
+              Sign out
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</aside>
+

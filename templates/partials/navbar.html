@@ -1,0 +1,64 @@
+<header id="appTopbar" class="h-14 flex items-center justify-between px-6 bg-[#F4F4F2] border-b border-[#E2E2E2] flex-shrink-0 relative">
+  <span class="font-mono text-[11px] text-[#6B6B6B] uppercase tracking-[0.03em]">
+    {{ shell_data.page_title }}
+  </span>
+
+  <div class="flex items-center gap-3">
+    <form id="topbarSearchForm" action="/notes" method="get" class="hidden items-center">
+      <div class="relative">
+        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B6B6B] w-4 h-4"></i>
+        <input
+          id="topbarSearchInput"
+          name="search"
+          type="search"
+          placeholder="Search notes..."
+          class="h-8 pl-9 pr-3 bg-white border border-[#E2E2E2] rounded-lg text-[13px] text-[#1A1A1A] placeholder:text-[#6B6B6B] focus:outline-none focus:border-[#2D6A4F] w-48 transition-all"
+        >
+      </div>
+    </form>
+    <button id="topbarSearchToggle" type="button" class="text-[#6B6B6B] hover:text-[#2D6A4F] transition-colors p-1">
+      <i data-lucide="search" class="w-5 h-5"></i>
+    </button>
+
+    <div class="relative">
+      <button id="topbarNotificationToggle" type="button" class="relative text-[#6B6B6B] hover:text-[#2D6A4F] transition-colors p-1">
+        <i data-lucide="bell" class="w-5 h-5"></i>
+        {% if shell_data.notifications %}
+          <span class="absolute top-0.5 right-0.5 w-2 h-2 bg-[#C0392B] rounded-full border-2 border-[#F4F4F2]"></span>
+        {% endif %}
+      </button>
+      <div id="topbarNotificationPanel" class="hidden absolute top-[calc(100%+8px)] right-0 w-[380px] bg-white z-50 overflow-hidden rounded-b-[16px] border border-[#E2E2E2]" style="box-shadow: 0 8px 32px rgba(0,0,0,0.10); border-top: none;">
+        <div class="flex items-center justify-between px-5 pt-5 pb-3 border-b border-[#E2E2E2]">
+          <span class="font-serif text-[17px] font-medium text-[#1A1A1A]">Nudges</span>
+          <button id="topbarNotificationClose" type="button" class="text-[#6B6B6B] hover:text-[#1A1A1A] transition-colors">
+            <i data-lucide="x" class="w-4 h-4"></i>
+          </button>
+        </div>
+        <div class="divide-y divide-[#E2E2E2] max-h-[420px] overflow-y-auto">
+          {% if shell_data.notifications %}
+            {% for item in shell_data.notifications %}
+              <a href="{{ item.href }}" class="block px-5 py-4 hover:bg-[#F4F4F2] transition-colors">
+                <div class="flex items-start justify-between gap-2">
+                  <p class="text-[14px] font-medium text-[#1A1A1A] leading-tight">{{ item.title }}</p>
+                  <span class="font-mono text-[10px] text-[#6B6B6B] whitespace-nowrap tracking-[0.03em]">{{ item.time }}</span>
+                </div>
+                <p class="text-[12px] text-[#6B6B6B] mt-0.5 mb-2">{{ item.sub }}</p>
+                <span class="inline-flex text-[11px] font-semibold text-[#2D6A4F] border border-[#2D6A4F] rounded-full px-3 py-0.5 hover:bg-[#D8E8E0] transition-colors">{{ item.action }}</span>
+              </a>
+            {% endfor %}
+          {% else %}
+            <div class="px-5 py-6 text-[14px] text-[#6B6B6B]">You're all caught up for now.</div>
+          {% endif %}
+        </div>
+        <div class="px-5 py-3 border-t border-[#E2E2E2] text-center">
+          <a href="/history" class="text-[12px] text-[#6B6B6B] hover:text-[#2D6A4F] transition-colors">View full activity →</a>
+        </div>
+      </div>
+    </div>
+
+    <a href="/settings" class="w-8 h-8 rounded-full bg-[#2D6A4F] flex items-center justify-center cursor-pointer">
+      <span class="font-mono text-[11px] text-white tracking-wider">{{ shell_data.user.initials }}</span>
+    </a>
+  </div>
+</header>
+

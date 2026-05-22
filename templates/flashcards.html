@@ -1,0 +1,206 @@
+{% extends "base_app.html" %}
+{% block title %}Nudge - Flashcard Review{% endblock %}
+
+{% block page_styles %}
+  <style>
+body {
+      font-family: 'Josefin Sans', sans-serif;
+    }
+    .font-serif {
+      font-family: 'Instrument Serif', serif;
+    }
+    
+    /* Native 3D Animation transitions replacing Framer Motion */
+    .flashcard-perspective {
+      perspective: 1000px;
+    }
+    .flashcard-inner {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      text-align: center;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-style: preserve-3d;
+    }
+    .flashcard-inner.is-flipped {
+      transform: rotateY(180deg);
+    }
+    .flashcard-front, .flashcard-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      -webkit-backface-visibility: hidden;
+      backface-visibility: hidden;
+      border-radius: 20px;
+    }
+    .flashcard-back {
+      transform: rotateY(180deg);
+    }
+    
+    /* Card structural change animation */
+    .card-slide {
+      transition: opacity 0.25s ease, transform 0.25s ease;
+    }
+    .card-slide.slide-out-left {
+      opacity: 0;
+      transform: translateX(-100px) scale(0.95);
+    }
+    .card-slide.slide-out-right {
+      opacity: 0;
+      transform: translateX(100px) scale(0.95);
+    }
+    .card-slide.slide-in-left {
+      opacity: 0;
+      transform: translateX(-100px) scale(0.95);
+    }
+    .card-slide.slide-in-right {
+      opacity: 0;
+      transform: translateX(100px) scale(0.95);
+    }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-[640px] mx-auto flex flex-col items-center">
+    
+    <!-- ── Header & Progress Metric ── -->
+    <div class="w-full mb-8 text-center">
+      <h1 class="font-serif text-[32px] font-medium text-[#1A1A1A] mb-4">
+        Flashcard Review
+      </h1>
+      <div class="flex items-center justify-center gap-4">
+        <div class="flex-1 max-w-[360px] h-[6px] bg-[#E2E2E2] rounded-full overflow-hidden">
+          <div
+            id="progressBar"
+            class="h-full bg-[#2D6A4F] rounded-full transition-all duration-500"
+            style="width: 25%;"
+          ></div>
+        </div>
+        <span id="cardProgressText" class="font-mono text-[12px] text-[#6B6B6B] tracking-[0.03em] whitespace-nowrap">
+          Card 1 of 4
+        </span>
+      </div>
+    </div>
+
+    <!-- ── Flashcard Display Console ── -->
+    <div class="relative w-full flashcard-perspective" style="height: 380px;">
+      <div id="flashcardInner" class="flashcard-inner card-slide">
+        
+        <!-- CARD FRONT LAYER -->
+        <div 
+          class="flashcard-front bg-white border-[1.5px] border-[#E2E2E2] flex flex-col items-center justify-between p-8 cursor-pointer select-none"
+          style="box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);"
+          onclick="revealAnswer()"
+        >
+          <span class="font-mono text-[11px] uppercase tracking-[0.06em] text-[#6B6B6B]">
+            Question
+          </span>
+          <div class="flex-1 flex items-center justify-center px-4">
+            <p id="questionDisplayFront" class="font-serif text-[22px] font-medium text-[#1A1A1A] text-center leading-snug">
+              <!-- Injected dynamically -->
+            </p>
+          </div>
+          <button class="text-[#2D6A4F] text-[13px] font-semibold hover:underline focus:outline-none">
+            Tap to reveal →
+          </button>
+        </div>
+
+        <!-- CARD BACK LAYER -->
+        <div 
+          class="flashcard-back bg-white border-[1.5px] border-[#E2E2E2] flex flex-col items-center justify-between p-8 select-none"
+          style="box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);"
+        >
+          <span class="font-mono text-[11px] uppercase tracking-[0.06em] text-[#2D6A4F]">
+            Answer
+          </span>
+          <div class="flex-1 flex flex-col items-center justify-center px-4 gap-4 overflow-y-auto">
+            <p id="answerDisplay" class="text-[15px] text-[#1A1A1A] text-center leading-relaxed">
+              <!-- Injected dynamically -->
+            </p>
+            <p id="questionDisplayBack" class="text-[13px] text-[#6B6B6B] text-center italic font-serif">
+              <!-- Injected dynamically -->
+            </p>
+          </div>
+
+          <!-- Rating Interaction Grid -->
+          <div class="w-full grid grid-cols-3 gap-2">
+            <button
+              onclick="handleRate('still')"
+              class="flex flex-col items-center justify-center gap-1 py-3 rounded-xl bg-[#E2E2E2] text-[#1A1A1A] hover:bg-[#D1D1D1] transition-colors focus:outline-none"
+            >
+              <span class="text-[12px] font-semibold">Still learning</span>
+            </button>
+            <button
+              onclick="handleRate('almost')"
+              class="flex flex-col items-center justify-center gap-1 py-3 rounded-xl bg-[#F0F0EE] text-[#52796F] hover:bg-[#E2E2E2] transition-colors focus:outline-none"
+            >
+              <span class="text-[12px] font-semibold">Almost there</span>
+            </button>
+            <button
+              onclick="handleRate('got')"
+              class="flex id-got-btn flex-row items-center justify-center gap-1 py-3 rounded-xl bg-[#D8E8E0] text-[#2D6A4F] hover:bg-[#C5DCD0] transition-colors focus:outline-none"
+            >
+              <i data-lucide="check" class="w-3.5 h-3.5 stroke-[3]"></i>
+              <span class="text-[12px] font-semibold">Got it ✓</span>
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ── Deck Navigation Controls ── -->
+    <div class="flex items-center justify-between w-full mt-8 px-4">
+      <button
+        id="prevBtn"
+        onclick="goPrev()"
+        class="text-[#6B6B6B] hover:text-[#2D6A4F] disabled:opacity-30 transition-colors p-2 focus:outline-none"
+      >
+        <i data-lucide="arrow-left" class="w-[22px] h-[22px]"></i>
+      </button>
+
+      <div class="flex gap-6">
+        <button
+          onclick="handleShuffle()"
+          class="flex items-center gap-1.5 font-mono text-[12px] text-[#6B6B6B] hover:text-[#2D6A4F] transition-colors tracking-[0.03em] focus:outline-none"
+        >
+          <i data-lucide="shuffle" class="w-3.5 h-3.5"></i> Shuffle
+        </button>
+        <button
+          onclick="handleRestart()"
+          class="flex items-center gap-1.5 font-mono text-[12px] text-[#6B6B6B] hover:text-[#2D6A4F] transition-colors tracking-[0.03em] focus:outline-none"
+        >
+          <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i> Restart
+        </button>
+      </div>
+
+      <button
+        id="nextBtn"
+        onclick="goNext()"
+        class="text-[#6B6B6B] hover:text-[#2D6A4F] disabled:opacity-30 transition-colors p-2 focus:outline-none"
+      >
+        <i data-lucide="arrow-right" class="w-[22px] h-[22px]"></i>
+      </button>
+    </div>
+
+    <!-- ── Live Scoreboard Stats Counter ── -->
+    <div class="mt-6 font-mono text-[12px] text-[#6B6B6B] flex items-center gap-4 tracking-[0.03em]">
+      <span class="text-[#2D6A4F] font-medium">Got it: <span id="countGot">0</span></span>
+      <span class="text-[#E2E2E2]">·</span>
+      <span>Almost: <span id="countAlmost">0</span></span>
+      <span class="text-[#E2E2E2]">·</span>
+      <span>Still learning: <span id="countStill">0</span></span>
+    </div>
+
+    <!-- ── Back Navigation Link ── -->
+    <div class="mt-6">
+      <a id="flashcardsBackLink" href="#" class="text-[13px] text-[#6B6B6B] hover:text-[#2D6A4F] transition-colors">
+        &larr; Back to notes
+      </a>
+    </div>
+{% endblock %}
+
+{% block page_scripts %}
+  <script src="/static/js/flashcards.js"></script>
+{% endblock %}
+

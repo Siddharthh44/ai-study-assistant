@@ -1,0 +1,111 @@
+{% extends "base_app.html" %}
+{% block title %}Nudge - View Note{% endblock %}
+
+{% block page_styles %}
+  <style>
+body { font-family: 'Josefin Sans', sans-serif; }
+    .font-serif { font-family: 'Instrument Serif', serif; }
+    .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+    #noteContentCard { line-height: 1.75; color: #1A1A1A; }
+    #noteContentCard > :first-child { margin-top: 0; }
+    #noteContentCard > :last-child { margin-bottom: 0; }
+    #noteContentCard h1,
+    #noteContentCard h2,
+    #noteContentCard h3,
+    #noteContentCard h4 { font-family: 'Instrument Serif', serif; font-weight: 500; color: #1A1A1A; line-height: 1.35; margin-top: 1.25rem; margin-bottom: 0.65rem; }
+    #noteContentCard h1 { font-size: 1.6rem; }
+    #noteContentCard h2 { font-size: 1.35rem; }
+    #noteContentCard h3 { font-size: 1.12rem; }
+    #noteContentCard p { font-size: 0.97rem; color: #1A1A1A; margin: 0.8rem 0; }
+    #noteContentCard ul,
+    #noteContentCard ol { margin: 0.8rem 0 1rem 1.4rem; }
+    #noteContentCard li { margin: 0.3rem 0; padding-left: 0.15rem; }
+    #noteContentCard hr { margin: 1.25rem 0; border: 0; border-top: 1px solid #E2E2E2; }
+    #noteContentCard blockquote { border-left: 3px solid #D8E8E0; padding-left: 0.9rem; color: #4B4B4B; margin: 1rem 0; }
+    #noteContentCard pre { margin: 0.9rem 0; padding: 0.8rem 0.9rem; background: #F4F4F2; border: 1px solid #E2E2E2; border-radius: 0.75rem; overflow-x: auto; font-size: 0.86rem; line-height: 1.6; }
+    #noteContentCard code { font-family: 'JetBrains Mono', monospace; font-size: 0.86rem; background: #F4F4F2; padding: 0.12rem 0.33rem; border-radius: 0.35rem; }
+    #noteContentCard pre code { background: transparent; padding: 0; border-radius: 0; }
+    #noteContentCard table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+    #noteContentCard th,
+    #noteContentCard td { border: 1px solid #E2E2E2; padding: 0.55rem 0.6rem; text-align: left; vertical-align: top; font-size: 0.93rem; }
+    #noteContentCard th { background: #F4F4F2; font-weight: 600; }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 animate-fade-in">
+    <div class="lg:col-span-8 space-y-6">
+      <div class="flex flex-col gap-3">
+        <div class="flex items-start justify-between gap-4">
+          <div class="flex-1 min-w-0">
+            <input id="titleInput" type="text" class="hidden font-serif text-[28px] font-medium text-[#1A1A1A] w-full bg-transparent border-b-2 border-[#2D6A4F] focus:outline-none pb-1">
+            <h1 id="titleText" class="font-serif text-[28px] font-medium text-[#1A1A1A] cursor-text hover:bg-[#F0F0EE] rounded px-1 -ml-1 transition-colors truncate">Loading note...</h1>
+            <div class="flex items-center gap-3 mt-2">
+              <span id="noteSubjectBadge" class="bg-[#D8E8E0] text-[#2D6A4F] text-[11px] font-medium px-2.5 py-0.5 rounded-full">General</span>
+              <span id="noteDateText" class="font-mono text-[11px] text-[#6B6B6B] tracking-[0.03em]">Generated just now</span>
+            </div>
+          </div>
+          <div class="flex items-center gap-1 flex-shrink-0">
+            <button id="editTitleBtn" title="Edit title" class="w-9 h-9 rounded-lg flex items-center justify-center text-[#6B6B6B] hover:text-[#2D6A4F] hover:bg-[#F0F0EE] transition-colors focus:outline-none">
+              <i data-lucide="pencil" class="w-[18px] h-[18px]"></i>
+            </button>
+            <button id="bookmarkBtn" title="Bookmark" class="w-9 h-9 rounded-lg flex items-center justify-center text-[#6B6B6B] hover:text-[#2D6A4F] hover:bg-[#F0F0EE] transition-colors focus:outline-none">
+              <i data-lucide="bookmark" class="w-[18px] h-[18px]"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="noteContentCard" class="bg-white rounded-xl border border-[#E2E2E2] p-6 md:p-10 min-h-[600px]" style="box-shadow: 0 1px 3px rgba(0,0,0,0.02);"></div>
+
+      <div class="flex items-center justify-between px-1">
+        <div class="flex items-center gap-4">
+          <span class="text-[13px] text-[#6B6B6B]">Was this helpful?</span>
+          <button id="feedbackUpBtn" class="text-[#6B6B6B] hover:text-[#2D6A4F] transition-colors focus:outline-none">
+            <i data-lucide="thumbs-up" class="w-[18px] h-[18px]"></i>
+          </button>
+          <button id="feedbackDownBtn" class="text-[#6B6B6B] hover:text-[#C0392B] transition-colors focus:outline-none">
+            <i data-lucide="thumbs-down" class="w-[18px] h-[18px]"></i>
+          </button>
+        </div>
+        <button id="editNoteBtn" class="text-[13px] text-[#2D6A4F] hover:underline font-medium focus:outline-none">Edit this note</button>
+      </div>
+    </div>
+
+    <div class="lg:col-span-4 space-y-4 lg:sticky lg:top-6 self-start">
+      <div class="bg-white rounded-xl border border-[#E2E2E2] p-5">
+        <h3 class="font-serif text-[17px] font-medium text-[#1A1A1A] mb-3">Key Concepts</h3>
+        <div id="conceptsCapsulesContainer" class="flex flex-wrap gap-2"></div>
+      </div>
+
+      <div class="bg-white rounded-xl border border-[#E2E2E2] p-5 bg-[#D8E8E0]/10">
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="font-serif text-[17px] font-medium text-[#1A1A1A]">Flashcards Ready</h3>
+          <span id="flashcardsCountBadge" class="bg-[#D8E8E0] text-[#2D6A4F] text-[11px] font-medium px-2.5 py-0.5 rounded-full">0 cards</span>
+        </div>
+        <p class="text-[13px] text-[#6B6B6B] mb-4">Review the key terms from this note.</p>
+        <button id="flashcardsLaunchBtn" class="w-full bg-[#F4F4F2] hover:bg-[#E2E2E2] text-[#1A1A1A] text-[14px] font-semibold py-2.5 px-4 rounded-lg border border-[#E2E2E2] transition-colors focus:outline-none">View Flashcards →</button>
+      </div>
+
+      <div class="bg-white rounded-xl border border-[#D2E4DB] p-5 bg-[#D8E8E0]/5">
+        <h3 class="font-serif text-[17px] font-medium text-[#1A1A1A] mb-2">Quiz Available</h3>
+        <p class="text-[13px] text-[#6B6B6B] mb-4">Test your knowledge on this topic.</p>
+        <button id="quizLaunchBtn" class="w-full bg-[#2D6A4F] hover:bg-[#245C43] text-white text-[14px] font-semibold py-2.5 px-4 rounded-lg transition-colors focus:outline-none">Start Quiz →</button>
+      </div>
+
+      <div class="bg-white rounded-xl border border-[#E2E2E2] p-5">
+        <h3 class="font-serif text-[17px] font-medium text-[#1A1A1A] mb-3">Export</h3>
+        <div class="grid grid-cols-2 gap-2">
+          <button id="exportPdfBtn" class="flex items-center justify-center gap-2 bg-[#F4F4F2] hover:bg-[#E2E2E2] text-[#1A1A1A] text-[13px] font-semibold py-2 px-3 rounded-lg border border-[#E2E2E2] transition-colors focus:outline-none"><i data-lucide="file-text" class="w-3.5 h-3.5 text-[#6B6B6B]"></i> PDF</button>
+          <button id="exportTxtBtn" class="flex items-center justify-center gap-2 bg-[#F4F4F2] hover:bg-[#E2E2E2] text-[#1A1A1A] text-[13px] font-semibold py-2 px-3 rounded-lg border border-[#E2E2E2] transition-colors focus:outline-none"><i data-lucide="file-text" class="w-3.5 h-3.5 text-[#6B6B6B]"></i> TXT</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block page_scripts %}
+  <script src="/static/js/notes.js"></script>
+{% endblock %}
+

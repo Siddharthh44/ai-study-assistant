@@ -21,6 +21,10 @@ import re
 logger = logging.getLogger(__name__)
 
 
+class ContentGenerationError(RuntimeError):
+    pass
+
+
 def _get_bool_env(name: str, default: bool) -> bool:
     value = os.getenv(name)
     if value is None:
@@ -200,25 +204,19 @@ def generate_summary(text: str, mode: str = "short") -> dict[str, Any]:
     finally:
         _release_request_future(cache_key)
 
-from .prompt_builder import build_process_prompt
-
 def generate_full_content(text: str) -> dict:
     try:
         prompt = build_process_prompt(text)
         llm_response = generate_content(prompt, request_size=len(text))
 
         cleaned = re.sub(r"```json|```", "", llm_response).strip()
-        return json.loads(cleaned)
+        parsed = json.loads(cleaned)
+        if not isinstance(parsed, dict):
+            raise ContentGenerationError("The AI service returned an unexpected response.")
+        return parsed
+    except ContentGenerationError:
+        raise
+    except Exception as exc:
+        logger.exception("Full content generation failed")
+        raise ContentGenerationError("The AI service is temporarily unavailable. Please try again.") from exc
 
-    except Exception as e:
-        print("API FAILED:", str(e))
-
-        # ✅ FALLBACK RESPONSE
-        return {
-            "title": "AI Notes (Fallback)",
-            "summary": "AI service is currently busy. Please try again in a few seconds.",
-            "notes": "We couldn’t generate full notes due to high server load.",
-            "key_concepts": [],
-            "flashcards": [],
-            "quiz": []
-        }

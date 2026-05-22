@@ -1,0 +1,29 @@
+{% extends "base_app.html" %}
+{% block title %}Settings - Nudge{% endblock %}
+
+{% block page_styles %}
+  <style>
+body { font-family: 'Josefin Sans', sans-serif; }
+    .font-serif { font-family: 'Instrument Serif', serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .animate-fade-in { animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto space-y-8 animate-fade-in">
+    <div><h1 class="font-serif text-[32px] font-medium text-[#1A1A1A] leading-tight">Settings</h1></div>
+    <div class="flex flex-col lg:flex-row gap-8 items-start">
+      <aside class="w-full lg:w-[240px] flex-shrink-0">
+        <ul class="space-y-0.5" id="navItemsList"></ul>
+      </aside>
+      <main class="flex-1 min-w-0 w-full" id="settingsDynamicContentArea"></main>
+    </div>
+  </div>
+{% endblock %}
+
+{% block page_scripts %}
+  <script src="/static/js/settings.js"></script>
+{% endblock %}
+

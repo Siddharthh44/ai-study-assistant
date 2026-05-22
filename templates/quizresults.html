@@ -1,0 +1,52 @@
+{% extends "base_app.html" %}
+{% block title %}Quiz Results{% endblock %}
+
+{% block page_styles %}
+  <style>
+body { font-family: 'Josefin Sans', sans-serif; }
+    .font-serif { font-family: 'Instrument Serif', serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .animate-container { animation: fadeIn 0.5s ease-out forwards; }
+    .animate-scale-up { animation: scaleUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    .animate-slide-right { animation: slideRight 0.8s cubic-bezier(0.16, 1, 0.3, 1) 0.3s forwards; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes scaleUp { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+    @keyframes slideRight { from { width: 0%; } to { width: var(--target-width); } }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-[600px] w-full mx-auto text-center animate-container space-y-10">
+    <div>
+      <div class="animate-scale-up">
+        <h1 id="scoreValue" class="font-serif text-[56px] font-medium text-[#1A1A1A] leading-none mb-2">0 / 0</h1>
+        <p id="percentValue" class="font-serif text-[28px] font-medium text-[#2D6A4F] mb-4">0%</p>
+      </div>
+      <div class="h-2 bg-[#E2E2E2] rounded-full overflow-hidden max-w-[300px] mx-auto mb-4">
+        <div id="scoreBar" class="h-full bg-[#2D6A4F] rounded-full animate-slide-right" style="--target-width: 0%; width: 0%;"></div>
+      </div>
+      <p id="feedbackText" class="text-[15px] text-[#6B6B6B] max-w-[380px] mx-auto leading-relaxed">Take a quiz to see your results here.</p>
+    </div>
+
+    <div>
+      <h3 class="font-mono text-[11px] text-[#6B6B6B] uppercase tracking-[0.03em] mb-3">Topics to review</h3>
+      <div class="flex justify-center flex-wrap gap-2" id="weakTopicsWrapper"></div>
+    </div>
+
+    <div class="text-left space-y-3">
+      <h3 class="font-serif text-[22px] font-medium text-[#1A1A1A] mb-4">Review Incorrect Answers</h3>
+      <div class="space-y-3" id="wrongAnswersAccordionWrapper"></div>
+    </div>
+
+    <div class="flex justify-center gap-4 flex-wrap">
+      <button id="reviewNotesBtn" class="bg-transparent border-[1.5px] border-[#E2E2E2] text-[#1A1A1A] text-[14px] font-semibold px-6 py-2.5 rounded-lg hover:border-[#2D6A4F] hover:text-[#2D6A4F] transition-colors focus:outline-none">Review Notes →</button>
+      <button id="retryQuizBtn" class="flex items-center gap-2 bg-[#2D6A4F] text-white text-[14px] font-semibold px-6 py-2.5 rounded-lg hover:bg-[#245C43] transition-colors focus:outline-none">Try Again <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i></button>
+      <button id="exportResultsBtn" class="bg-transparent border-[1.5px] border-[#E2E2E2] text-[#1A1A1A] text-[14px] font-semibold px-6 py-2.5 rounded-lg hover:border-[#2D6A4F] hover:text-[#2D6A4F] transition-colors focus:outline-none">Export Results</button>
+    </div>
+  </div>
+{% endblock %}
+
+{% block page_scripts %}
+  <script src="/static/js/quizresults.js"></script>
+{% endblock %}
+

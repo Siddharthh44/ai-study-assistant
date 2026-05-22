@@ -1,0 +1,45 @@
+{% extends "base_app.html" %}
+{% block title %}Nudge - Your Progress{% endblock %}
+
+{% block head_extra %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block page_styles %}
+  <style>
+body { font-family: 'Josefin Sans', sans-serif; }
+    .font-serif { font-family: 'Instrument Serif', serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .animate-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  </style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto space-y-8 animate-fade-in">
+    <div>
+      <h1 class="font-serif text-[32px] font-medium text-[#1A1A1A] leading-tight">Your Progress</h1>
+      <p class="text-[15px] text-[#6B6B6B] mt-1">Track your performance and identify areas for improvement.</p>
+    </div>
+
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-5">
+      <div class="bg-white rounded-xl border border-[#E2E2E2] p-5 flex flex-col gap-4"><div class="flex items-center justify-between"><span class="text-[13px] text-[#6B6B6B]">Quizzes Taken</span><div class="w-8 h-8 rounded-lg bg-[#F4F4F2] flex items-center justify-center"><i data-lucide="graduation-cap" class="w-4 h-4 text-[#2D6A4F]"></i></div></div><span id="quizzesTakenValue" class="font-serif text-[28px] font-medium text-[#1A1A1A] leading-none">0</span></div>
+      <div class="bg-white rounded-xl border border-[#E2E2E2] p-5 flex flex-col gap-4"><div class="flex items-center justify-between"><span class="text-[13px] text-[#6B6B6B]">Average Score</span><div class="w-8 h-8 rounded-lg bg-[#F4F4F2] flex items-center justify-center"><i data-lucide="trending-up" class="w-4 h-4 text-[#2D6A4F]"></i></div></div><span id="averageScoreValue" class="font-serif text-[28px] font-medium text-[#1A1A1A] leading-none">0%</span></div>
+      <div class="bg-white rounded-xl border border-[#E2E2E2] p-5 flex flex-col gap-4"><div class="flex items-center justify-between"><span class="text-[13px] text-[#6B6B6B]">Cards Reviewed</span><div class="w-8 h-8 rounded-lg bg-[#F4F4F2] flex items-center justify-center"><i data-lucide="book-open" class="w-4 h-4 text-[#2D6A4F]"></i></div></div><span id="cardsReviewedValue" class="font-serif text-[28px] font-medium text-[#1A1A1A] leading-none">0</span></div>
+      <div class="bg-white rounded-xl border border-[#E2E2E2] p-5 flex flex-col gap-4"><div class="flex items-center justify-between"><span class="text-[13px] text-[#6B6B6B]">Study Streak</span><div class="w-8 h-8 rounded-lg bg-[#F4F4F2] flex items-center justify-center"><i data-lucide="flame" class="w-4 h-4 text-[#2D6A4F]"></i></div></div><span id="studyStreakProgressValue" class="font-serif text-[28px] font-medium text-[#1A1A1A] leading-none">0 days</span></div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div class="bg-white rounded-xl border border-[#E2E2E2] p-6"><h3 class="font-serif text-[22px] font-medium text-[#1A1A1A] mb-6">Score Trend</h3><div class="h-[280px] w-full relative"><canvas id="scoreTrendChart"></canvas></div></div>
+      <div class="bg-white rounded-xl border border-[#E2E2E2] p-6"><h3 class="font-serif text-[22px] font-medium text-[#1A1A1A] mb-6">Performance by Topic</h3><div class="space-y-4" id="topicProgressWrapper"></div></div>
+    </div>
+
+    <div class="bg-white rounded-xl border border-[#E2E2E2] border-l-[3px] border-l-[#2D6A4F] p-6"><h3 class="font-serif text-[22px] font-medium text-[#1A1A1A] mb-4">Where to focus next</h3><div class="flex flex-wrap gap-4" id="focusPillsContainer"></div></div>
+    <div class="bg-white rounded-xl border border-[#E2E2E2] overflow-hidden"><div class="px-6 py-4 border-b border-[#E2E2E2]"><h3 class="font-serif text-[22px] font-medium text-[#1A1A1A]">Recent Quiz History</h3></div><div class="divide-y divide-[#E2E2E2]" id="quizHistoryWrapper"></div></div>
+  </div>
+{% endblock %}
+
+{% block page_scripts %}
+  <script src="/static/js/progress.js"></script>
+{% endblock %}
+

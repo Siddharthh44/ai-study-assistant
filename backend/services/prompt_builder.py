@@ -1,49 +1,3 @@
-def build_process_prompt(text: str) -> str:
-    return f"""
-You are an advanced AI study assistant.
-
-Analyze the study material and generate structured learning content.
-
-Return STRICTLY valid JSON in this format:
-
-{{
-"title": "Topic title",
-
-"summary": "Short paragraph summary",
-
-"notes": "Well-structured notes with headings, subpoints, and explanations",
-
-"key_concepts": [
-  {{
-    "term": "Concept name",
-    "explanation": "Clear explanation"
-  }}
-],
-
-"flashcards": [
-  {{
-    "question": "Question",
-    "answer": "Answer"
-  }}
-],
-
-"quiz": [
-  {{
-    "question": "MCQ question",
-    "options": ["A", "B", "C", "D"],
-    "answer": "Correct option"
-  }}
-]
-
-}}
-
-Study Material:
-{text}
-
-Return ONLY JSON.
-"""
-
-# OLD (keep for compatibility)
 def build_summary_prompt(text: str, mode: str = "short") -> str:
     if mode == "short":
         instruction = "Give a very concise summary in 3-4 lines."
@@ -72,12 +26,12 @@ Text:
 """
 
 
-# NEW (your full system)
 def build_process_prompt(text: str) -> str:
     return f"""
 You are an advanced AI study assistant.
+Analyze the study material and generate structured learning content.
 
-Return STRICT JSON:
+Return STRICTLY valid JSON in this exact format:
 
 {{
 "title": "...",
@@ -100,4 +54,6 @@ Return STRICT JSON:
 
 Text:
 {text}
+
+Return ONLY JSON.
 """

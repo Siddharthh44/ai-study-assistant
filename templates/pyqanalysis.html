@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Exam Intelligence - PYQ Analysis</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Typography Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Josefin+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons Engine CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body {
+      font-family: 'Josefin Sans', sans-serif;
+    }
+    .font-serif {
+      font-family: 'Instrument Serif', serif;
+    }
+    .font-mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    /* Fade-in entry animation matching standard React transition presets */
+    .animate-fade-in {
+      animation: fadeIn 0.5s ease-out forwards;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="bg-[#F4F4F2] text-[#1A1A1A] p-6 md:p-12">
+
+  <!-- Core App Workspace Framework Container[cite: 11] -->
+  <div class="max-w-5xl mx-auto space-y-8 animate-fade-in">
+    
+    <!-- Title Page Header Block[cite: 11] -->
+    <div>
+      <h1 class="font-serif text-[32px] font-medium text-[#1A1A1A] leading-tight">
+        Exam Intelligence
+      </h1>
+      <p class="text-[15px] text-[#6B6B6B] mt-1">
+        Based on your uploaded previous year papers.
+      </p>
+    </div>
+
+    <!-- Interactive Navigation Subject Tabs Selector[cite: 11] -->
+    <div class="flex gap-2 flex-wrap" id="subjectTabsContainer">
+      <!-- Generated Dynamically by JS -->
+    </div>
+
+    <!-- Summary Metrics Grid Track[cite: 11] -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+      
+      <!-- Metric 1: Questions Analyzed[cite: 11] -->
+      <div class="bg-white rounded-xl border border-[#E2E2E2] p-5 flex items-center justify-between" style="box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+        <div>
+          <span class="text-[13px] font-medium block mb-1 text-[#6B6B6B]">Questions Analyzed</span>
+          <span class="font-serif text-[28px] font-medium text-[#1A1A1A] leading-none">1,240</span>
+        </div>
+        <div class="w-10 h-10 rounded-full flex items-center justify-center bg-[#F0F0EE]">
+          <i data-lucide="file-text" class="w-[18px] h-[18px] text-[#2D6A4F]"></i>
+        </div>
+      </div>
+
+      <!-- Metric 2: High-Frequency Topics[cite: 11] -->
+      <div class="bg-white rounded-xl border border-[#E2E2E2] p-5 flex items-center justify-between" style="box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+        <div>
+          <span class="text-[13px] font-medium block mb-1 text-[#6B6B6B]">High-Frequency Topics</span>
+          <span class="font-serif text-[28px] font-medium text-[#1A1A1A] leading-none">14</span>
+        </div>
+        <div class="w-10 h-10 rounded-full flex items-center justify-center bg-[#F0F0EE]">
+          <i data-lucide="trending-up" class="w-[18px] h-[18px] text-[#2D6A4F]"></i>
+        </div>
+      </div>
+
+      <!-- Metric 3: AI Predicted Important Areas Highlight[cite: 11] -->
+      <div class="bg-white rounded-xl border border-[#2D6A4F] bg-[#D8E8E0]/10 p-5 flex items-center justify-between">
+        <div>
+          <span class="text-[13px] font-medium block mb-1 text-[#2D6A4F]">Predicted Important Areas</span>
+          <span class="font-serif text-[28px] font-medium text-[#1A1A1A] leading-none">5</span>
+        </div>
+        <div class="w-10 h-10 rounded-full flex items-center justify-center bg-[#D8E8E0]">
+          <i data-lucide="brain" class="w-[18px] h-[18px] text-[#2D6A4F]"></i>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Analysis Presentation Split Columns[cite: 11] -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      
+      <!-- Topic Distribution Horizontal Meters Graph Canvas[cite: 11] -->
+      <div class="bg-white rounded-xl border border-[#E2E2E2] p-6" style="box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+        <h3 class="font-serif text-[22px] font-medium text-[#1A1A1A] mb-5">
+          Topic Frequency
+        </h3>
+        <div class="space-y-4" id="topicFrequencyContainer">
+          <!-- Injected dynamically via data arrays[cite: 11] -->
+        </div>
+      </div>
+
+      <!-- AI Predictive Forecast Timeline Canvas Container[cite: 11] -->
+      <div class="bg-white rounded-xl p-6 relative overflow-hidden" style="box-shadow: 0 0 0 2px #2D6A4F, 0 1px 4px rgba(0,0,0,0.06);">
+        <!-- Watermark Brain Graphic Backdrop Background[cite: 11] -->
+        <div class="absolute top-4 right-4 opacity-[0.06] pointer-events-none">
+          <i data-lucide="brain" style="width: 120px; height: 120px;" class="text-[#2D6A4F]"></i>
+        </div>
+        
+        <div class="flex items-center gap-2 mb-5">
+          <span class="bg-[#2D6A4F] text-white text-[11px] font-semibold uppercase tracking-wider px-3 py-1 rounded-full">
+            AI Insight
+          </span>
+          <span class="font-mono text-[11px] text-[#6B6B6B] uppercase tracking-[0.03em]">
+            High Probability Topics
+          </span>
+        </div>
+
+        <div class="space-y-5 relative z-10" id="aiPredictionsContainer">
+          <!-- Injected dynamically via predictive arrays[cite: 11] -->
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Question Browser Component Module View[cite: 11] -->
+    <div>
+      <h3 class="font-serif text-[22px] font-medium text-[#1A1A1A] mb-4">
+        Browse Questions
+      </h3>
+      <div class="bg-white rounded-xl border border-[#E2E2E2] p-0 overflow-hidden" style="box-shadow: 0 1px 3px rgba(0,0,0,0.02);">
+        
+        <!-- Live Real-time Text Filter Bar[cite: 11] -->
+        <div class="p-4 bg-[#F4F4F2] border-b border-[#E2E2E2] flex gap-3">
+          <div class="relative flex-1">
+            <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 text-[#6B6B6B] w-4 h-4"></i>
+            <input
+              id="questionSearchInput"
+              type="text"
+              placeholder="Search within questions..."
+              class="w-full pl-9 pr-4 h-10 bg-white border border-[#E2E2E2] rounded-lg text-[14px] text-[#1A1A1A] placeholder:text-[#6B6B6B] focus:outline-none focus:border-[#2D6A4F] transition-colors"
+            />
+          </div>
+        </div>
+
+        <!-- Scrollable Accordion Wrapper Stack[cite: 11] -->
+        <div class="divide-y divide-[#E2E2E2]" id="pyqAccordionContainer">
+          <!-- Populated and filtered live via user keystrokes/tabs[cite: 11] -->
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Javascript Logic Architecture Engine -->
+  <script>
+    // Constant Datasets Mock Matrices[cite: 11]
+    const topicsData = [
+      { name: 'Thermodynamics', frequency: 14, importance: 'High' },
+      { name: 'Electrostatics', frequency: 11, importance: 'Medium' },
+      { name: 'Organic Chemistry', frequency: 9, importance: 'High' },
+      { name: 'Genetics', frequency: 8, importance: 'Low' },
+      { name: 'Wave Optics', frequency: 12, importance: 'High' },
+      { name: 'Equilibrium', frequency: 7, importance: 'Medium' },
+    ];
+
+    const predictionsData = [
+      { topic: 'Wave Optics', confidence: 'high', reason: 'Consistent pattern every 2 years.' },
+      { topic: 'Equilibrium', confidence: 'medium', reason: 'High weightage in recent trends.' },
+      { topic: 'Plant Physiology', confidence: 'medium', reason: 'Expected due to syllabus changes.' },
+      { topic: 'Electrochemistry', confidence: 'high', reason: 'Appeared in 6 of last 8 papers.' },
+      { topic: 'Modern Physics', confidence: 'low', reason: 'Low frequency but flagged by AI.' },
+    ];
+
+    const pyqsData = [
+      {
+        year: '2023',
+        subject: 'Physics',
+        text: 'Calculate the capacitance of a parallel plate capacitor with a dielectric slab inserted...',
+        answer: 'The capacitance with dielectric: C = κε₀A/d where κ is the dielectric constant.',
+      },
+      {
+        year: '2022',
+        subject: 'Chemistry',
+        text: 'Explain the mechanism of SN2 reaction with an example.',
+        answer: 'SN2 reactions proceed through a backside attack, with inversion of configuration...',
+      },
+      {
+        year: '2023',
+        subject: 'Biology',
+        text: 'Describe the process of DNA replication and the enzymes involved.',
+        answer: 'DNA replication is semi-conservative. Key enzymes: Helicase, Primase, DNA Pol III...',
+      },
+    ];
+
+    // Reactive Context Variables State[cite: 11]
+    let currentActiveSubject = 'All';
+    let activeSearchString = '';
+    let openAccordionRowIndex = null;
+
+    // DOM Element View Selectors
+    const subjectTabsContainer = document.getElementById('subjectTabsContainer');
+    const topicFrequencyContainer = document.getElementById('topicFrequencyContainer');
+    const aiPredictionsContainer = document.getElementById('aiPredictionsContainer');
+    const pyqAccordionContainer = document.getElementById('pyqAccordionContainer');
+    const questionSearchInput = document.getElementById('questionSearchInput');
+
+    // Launch Layout System Initializer
+    function bootstrapDashboard() {
+      renderInteractiveTabs();
+      renderTopicFrequencies();
+      renderAiPredictions();
+      renderAndFilterPYQGrid();
+      
+      // Wire search inputs[cite: 11]
+      questionSearchInput.addEventListener('input', (e) => {
+        activeSearchString = e.target.value.toLowerCase();
+        renderAndFilterPYQGrid();
+      });
+    }
+
+    // Tab Action Mutation Functions[cite: 11]
+    function updateSelectedSubjectTab(selectedSubjectName) {
+      currentActiveSubject = selectedSubjectName;
+      renderInteractiveTabs();
+      renderAndFilterPYQGrid(); // Sync rows with subject constraints[cite: 11]
+    }
+
+    // Toggle Accordion Panel Views[cite: 11]
+    function toggleAccordionRow(clickedIndex) {
+      openAccordionRowIndex = (openAccordionRowIndex === clickedIndex) ? null : clickedIndex;
+      renderAndFilterPYQGrid();
+    }
+
+    // Render Tabs View Components[cite: 11]
+    function renderInteractiveTabs() {
+      const allowedCategories = ['All', 'Physics', 'Chemistry', 'Biology'];
+      subjectTabsContainer.innerHTML = allowedCategories.map(subj => {
+        const isSelected = currentActiveSubject === subj;
+        const classes = isSelected 
+          ? 'bg-[#2D6A4F] text-white px-5 py-2 rounded-full text-[13px] font-medium transition-all focus:outline-none'
+          : 'bg-white border border-[#E2E2E2] text-[#6B6B6B] hover:border-[#2D6A4F] hover:text-[#2D6A4F] px-5 py-2 rounded-full text-[13px] font-medium transition-all focus:outline-none';
+        
+        return `<button onclick="updateSelectedSubjectTab('${subj}')" class="${classes}">${subj}</button>`;
+      }).join('');
+    }
+
+    // Render Component: Topic Frequency Progress Track Bars[cite: 11]
+    function renderTopicFrequencies() {
+      topicFrequencyContainer.innerHTML = topicsData.map(topic => {
+        const structuralMeterWidthPct = (topic.frequency / 15) * 100;
+        
+        // Color distribution matching importance flags[cite: 11]
+        let thematicMeterHexColor = '#E2E2E2';
+        if (topic.importance === 'High') thematicMeterHexColor = '#2D6A4F';
+        if (topic.importance === 'Medium') thematicMeterHexColor = '#52796F';
+
+        return `
+          <div class="flex items-center gap-4">
+            <span class="w-36 text-[13px] font-medium text-[#1A1A1A] truncate flex-shrink-0">
+              ${topic.name}
+            </span>
+            <div class="flex-1 h-[6px] bg-[#F0F0EE] rounded-full overflow-hidden">
+              <div
+                class="h-full rounded-full transition-all duration-700"
+                style="width: ${structuralMeterWidthPct}%; background-color: ${thematicMeterHexColor};"
+              ></div>
+            </div>
+            <span class="font-mono text-[11px] text-[#6B6B6B] w-24 text-right tracking-[0.03em] flex-shrink-0">
+              Asked ${topic.frequency}×
+            </span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Render Component: AI Dynamic Insight Confidence Dots Matrix Indicators[cite: 11]
+    function generateConfidenceDotsMarkup(confidenceRank) {
+      return [0, 1, 2].map(dotIndex => {
+        let dotFillHexColor = '#E2E2E2';
+        
+        if (confidenceRank === 'high') {
+          dotFillHexColor = '#2D6A4F';
+        } else if (confidenceRank === 'medium' && dotIndex < 2) {
+          dotFillHexColor = '#52796F';
+        } else if (confidenceRank === 'low' && dotIndex === 0) {
+          dotFillHexColor = '#52796F';
+        }
+
+        return `<div class="w-1.5 h-1.5 rounded-full" style="background-color: ${dotFillHexColor};"></div>`;
+      }).join('');
+    }
+
+    // Render Component: Predictive Panels[cite: 11]
+    function renderAiPredictions() {
+      aiPredictionsContainer.innerHTML = predictionsData.map((pred, i) => {
+        const structuralPaddedCounter = String(i + 1).padStart(2, '0');
+        return `
+          <div class="flex gap-3">
+            <span class="font-serif text-[22px] text-[#2D6A4F]/20 select-none leading-none mt-0.5">
+              ${structuralPaddedCounter}
+            </span>
+            <div>
+              <div class="flex items-center gap-2 mb-0.5">
+                <h4 class="font-serif text-[17px] font-medium text-[#1A1A1A]">
+                  ${pred.topic}
+                </h4>
+                <div class="flex gap-0.5">
+                  ${generateConfidenceDotsMarkup(pred.confidence)}
+                </div>
+              </div>
+              <p class="text-[13px] text-[#6B6B6B]">${pred.reason}</p>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Render Grid Component: Filtered List of Past Year Questions[cite: 11]
+    function renderAndFilterPYQGrid() {
+      // Apply double evaluation filter (subject category tabs and key phrase search bar)[cite: 11]
+      const filteredPyqsCollection = pyqsData.filter(item => {
+        const matchSubject = (currentActiveSubject === 'All') || (item.subject === currentActiveSubject);
+        const matchKeyword = item.text.toLowerCase().includes(activeSearchString) || 
+                             item.answer.toLowerCase().includes(activeSearchString);
+        return matchSubject && matchKeyword;
+      });
+
+      if (filteredPyqsCollection.length === 0) {
+        pyqAccordionContainer.innerHTML = `
+          <div class="p-8 text-center text-[14px] text-[#6B6B6B]">
+            No matching previous year questions found.
+          </div>
+        `;
+        return;
+      }
+
+      pyqAccordionContainer.innerHTML = filteredPyqsCollection.map((q, rawIndex) => {
+        // Find true object index reference point across datasets[cite: 11]
+        const globalRefIdx = pyqsData.findIndex(item => item.text === q.text);
+        const isExpanded = openAccordionRowIndex === globalRefIdx;
+
+        const answerPanelHtml = isExpanded ? `
+          <div class="px-5 pb-5 pt-0">
+            <div class="pl-4 border-l-[3px] border-l-[#2D6A4F] bg-[#D8E8E0]/20 p-3 rounded-r-lg animate-fade-in">
+              <p class="font-mono text-[11px] text-[#2D6A4F] uppercase tracking-[0.03em] mb-1">
+                Answer
+              </p>
+              <p class="text-[14px] text-[#1A1A1A] leading-relaxed">${q.answer}</p>
+            </div>
+          </div>
+        ` : '';
+
+        const iconChevronMarkup = isExpanded 
+          ? `<i data-lucide="chevron-up" class="w-4 h-4"></i>` 
+          : `<i data-lucide="chevron-down" class="w-4 h-4"></i>`;
+
+        return `
+          <div class="hover:bg-[#F0F0EE] transition-colors">
+            <div class="p-5 cursor-pointer select-text" onclick="toggleAccordionRow(${globalRefIdx})">
+              <div class="flex items-center gap-2 mb-2">
+                <span class="font-mono text-[11px] font-medium bg-[#F0F0EE] text-[#6B6B6B] px-2 py-0.5 rounded-full tracking-[0.03em]">
+                  ${q.year}
+                </span>
+                <span class="bg-[#D8E8E0] text-[#2D6A4F] text-[11px] font-medium px-2 py-0.5 rounded-full">
+                  ${q.subject}
+                </span>
+              </div>
+              <div class="flex items-start justify-between gap-4">
+                <p class="text-[14px] text-[#1A1A1A] font-medium leading-relaxed">
+                  ${q.text}
+                </p>
+                <div class="text-[#6B6B6B] flex-shrink-0 mt-0.5 pointer-events-none">
+                  ${iconChevronMarkup}
+                </div>
+              </div>
+            </div>
+            ${answerPanelHtml}
+          </div>
+        `;
+      }).join('');
+
+      // Refresh Lucide graphics across layout additions[cite: 11]
+      lucide.createIcons();
+    }
+
+    // Engine Kickoff Ignition
+    lucide.createIcons();
+    bootstrapDashboard();
+  </script>
+</body>
+</html>
